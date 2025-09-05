@@ -9,5 +9,12 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "moduleResolution": "node"
-  }
+  },
+  "extends": "expo/tsconfig.base",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }
