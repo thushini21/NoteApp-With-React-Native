@@ -12,6 +12,7 @@ export type RootStackParamList = {
   AddNote: undefined;
 };
 
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainNavigator() {
