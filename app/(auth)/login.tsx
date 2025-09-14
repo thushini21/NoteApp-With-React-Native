@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { Alert, Button, Text, TextInput, View } from "react-native";
+import { auth } from "../../firebase";
 
 export default function Login() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function Login() {
       <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
       <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
       <Button title="Login" onPress={handleLogin} />
+      <Button title="Don't have an account? Register" onPress={() => router.push('/(auth)/register')} />
     </View>
   );
 }
