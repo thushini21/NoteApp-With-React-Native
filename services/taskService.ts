@@ -21,4 +21,5 @@ export const updateNote = async (id: string, note: Partial<Note>) => {
 export const deleteNote = async (id: string) => {
   const ref = doc(db, "notes", id);
   return await deleteDoc(ref);
-};
+}
+
