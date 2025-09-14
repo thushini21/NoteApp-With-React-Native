@@ -8,8 +8,8 @@ export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    if(user) router.replace("/dashboard/notes");
-    else router.replace("/auth/login");
+    if(user) router.replace("../dashboard/notes");
+    else router.replace("../login");
   }, [user]);
 
   return null;
