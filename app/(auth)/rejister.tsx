@@ -14,7 +14,7 @@ export default function Register() {
     try {
       const res = await register(email, password);
       setUser(res.user);
-      router.replace("/dashboard/notes");
+      router.replace("../dashboard/notes");
     } catch (err: any) {
       alert(err.message);
     }
@@ -27,7 +27,7 @@ export default function Register() {
       <Text>Password</Text>
       <TextInput secureTextEntry value={password} onChangeText={setPassword} style={{ borderWidth: 1, marginBottom: 10 }} />
       <Button title="Register" onPress={handleRegister} />
-      <Button title="Go to Login" onPress={() => router.push("/auth/login")} />
+      <Button title="Go to Login" onPress={() => router.push("../login")} />
     </View>
   );
 }
