@@ -1,24 +1,32 @@
 import React, { createContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../firebase";
 
-export const AuthContext = createContext({ user: null, setUser: (u:any)=>{} });
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+};
+
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = await AsyncStorage.getItem("user");
-      if(storedUser) setUser(JSON.parse(storedUser));
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
       setLoading(false);
-    };
-    loadUser();
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, loading }}>
+      {children}
     </AuthContext.Provider>
-  )
+  );
 };
