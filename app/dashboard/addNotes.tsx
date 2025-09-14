@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, FlatList } from "react-native";
+import { NotesContext } from "../../context/NotesContext";
 
 export default function AddNotes() {
   const [note, setNote] = useState("");
