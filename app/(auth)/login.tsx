@@ -24,7 +24,9 @@ export default function Login() {
       <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
       <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
       <Button title="Login" onPress={handleLogin} />
-      <Button title="Don't have an account? Register" onPress={() => router.push('/(auth)/register')} />
+      <Text style={{color: 'blue', marginTop: 16}} onPress={() => router.push('/(auth)/register')}>
+        Don't have an account? Register
+      </Text>
     </View>
   );
 }
