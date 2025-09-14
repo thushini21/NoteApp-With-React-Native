@@ -1,18 +1,20 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import React, { useContext, useState } from "react";
+import { Alert, Button, Text, TextInput, View } from "react-native";
+import { AuthContext } from "../../context/AuthContext";
+import { auth } from "../../firebase";
 
 export default function Register() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useContext(AuthContext);
 
   const handleRegister = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.replace("/dashboard/notes");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  router.replace("/(auth)/login");
     } catch(err:any) {
       Alert.alert("Register Error", err.message);
     }
