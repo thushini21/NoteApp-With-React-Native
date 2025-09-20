@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { View, ActivityIndicator, Text } from "react-native";
 import { useRouter } from "expo-router";
+import { useContext, useEffect } from "react";
+import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Index() {
@@ -9,15 +9,32 @@ export default function Index() {
 
   useEffect(() => {
     if(!loading) {
-  if(!user) router.replace("/(auth)/login");
+      if(!user) router.replace("/(auth)/login");
       else router.replace("/dashboard/addNotes");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   return (
-    <View style={{ flex:1, justifyContent:"center", alignItems:"center" }}>
+    <View style={styles.root}>
       <ActivityIndicator size="large"/>
-      <Text>Loading...</Text>
+      <Text style={styles.loadingText}>Loading...</Text>
     </View>
   );
 }
+
+const { width } = Dimensions.get('window');
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: width > 600 ? 48 : 16,
+  },
+  loadingText: {
+    fontSize: width > 600 ? 22 : 16,
+    marginTop: 16,
+    color: '#1976d2',
+    textAlign: 'center',
+  },
+});
