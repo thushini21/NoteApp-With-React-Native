@@ -1,11 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import React, { useContext } from "react";
-import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../context/NotesContext";
 
 export default function Home() {
-  const { notes } = useContext(NotesContext);
+  const { notes, deleteNote } = useContext(NotesContext);
   const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState("All notes");
@@ -18,6 +18,21 @@ export default function Home() {
 
   const handleAddNote = () => {
     router.push("/dashboard/addNotes");
+  };
+
+  const handleDeleteNote = (noteId: string, noteTitle: string) => {
+    Alert.alert(
+      "Delete Note",
+      `Are you sure you want to delete "${noteTitle}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => deleteNote(noteId)
+        }
+      ]
+    );
   };
 
   // Filter notes by search text and category
@@ -66,10 +81,37 @@ export default function Home() {
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={[styles.noteBox, { backgroundColor: item.color || '#fff' }] }>
-            <Text style={styles.noteTitle}>{item.title}</Text>
-            {item.category && (
-              <Text style={styles.noteCategory}>📁 {item.category}</Text>
-            )}
+            <View style={styles.noteHeader}>
+              <View style={styles.noteTitleSection}>
+                <Text style={styles.noteTitle}>{item.title}</Text>
+                {item.category && (
+                  <Text style={styles.noteCategory}>📁 {item.category}</Text>
+                )}
+              </View>
+              <View style={styles.noteActions}>
+                <TouchableOpacity 
+                  style={styles.editButton}
+                  onPress={() => router.push({
+                    pathname: '/dashboard/editNotes',
+                    params: {
+                      noteIndex: item.id || '',
+                      noteTitle: item.title || '',
+                      noteText: item.text || '',
+                      noteColor: item.color || '#fff',
+                      noteCategory: item.category || 'All notes'
+                    }
+                  })}
+                >
+                  <MaterialIcons name="edit" size={20} color="#007bff" />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteNote(item.id || '', item.title || '')}
+                >
+                  <MaterialIcons name="delete" size={20} color="#ff4444" />
+                </TouchableOpacity>
+              </View>
+            </View>
             <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
               {item.file ? (
                 <Text style={styles.fileLink}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
@@ -84,14 +126,19 @@ export default function Home() {
         )}
         ListEmptyComponent={<Text style={styles.empty}>No notes found.</Text>}
       />
+      
+      {/* Floating Add Button */}
+      <TouchableOpacity 
+        style={styles.floatingAddButton} 
+        onPress={handleAddNote}
+      >
+        <MaterialIcons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
+
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navButton} onPress={() => router.replace('/home')}>
           <MaterialIcons name="home" size={28} color="#007bff" />
           <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={handleAddNote}>
-          <MaterialIcons name="note-add" size={28} color="#007bff" />
-          <Text style={styles.navText}>Add Note</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => router.push('/profile')}>
           <MaterialIcons name="person" size={28} color="#007bff" />
@@ -228,6 +275,50 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#007bff',
     marginTop: 4,
+  },
+  floatingAddButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 100,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#007bff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  noteTitleSection: {
+    flex: 1,
+    marginRight: 8,
+  },
+  noteActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editButton: {
+    padding: 8,
+    marginRight: 4,
+    borderRadius: 6,
+    backgroundColor: '#e8f4fd',
+  },
+  deleteButton: {
+    padding: 8,
+    borderRadius: 6,
+    backgroundColor: '#ffebee',
   },
 });
 
