@@ -3,8 +3,9 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
-import { Alert, Button, Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NotesContext } from "../../context/NotesContext";
+import { useTheme } from "../../context/ThemeContext";
 // const styles = StyleSheet.create({
 //   navBar: {
 //     flexDirection: 'row',
@@ -31,12 +32,14 @@ import { NotesContext } from "../../context/NotesContext";
 export default function AddNotes() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const [color, setColor] = useState("");
   const [category, setCategory] = useState("All notes");
   const [file, setFile] = useState<{ uri: string, name: string }|null>(null);
   const [image, setImage] = useState<{ uri: string, name: string }|null>(null);
-  const { notes, addNote, deleteNote } = useContext(NotesContext);
+  const { addNote } = useContext(NotesContext);
+  const { theme, themeColors } = useTheme();
   const router = useRouter();
+
+  const defaultColor = "#f0e68c"; // Khaki color
 
   const categories = ["All notes", "Personal", "Work", "Others"];
 
@@ -58,77 +61,72 @@ export default function AddNotes() {
       if (imageToStore) {
         Alert.alert('Note', 'Images are only available on this device. They will not sync across devices.');
       }
-      await addNote(note, "", color, title, imageToStore, fileToStore, category);
+      await addNote(note, "", defaultColor, title, imageToStore, fileToStore, category);
       setTitle("");
       setNote("");
-      setColor("");
       setCategory("All notes");
       setFile(null);
       setImage(null);
+      router.replace("/home"); // Redirect to home page after adding note
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to add note";
       Alert.alert("Error", message);
     }
   };
 
-  const handleDeleteNote = (id: string) => {
-    Alert.alert(
-      "Delete Note",
-      "Are you sure you want to delete this note?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "OK", onPress: async () => await deleteNote(id), style: "destructive" }
-      ]
-    );
-  };
-
-  const handleEditNote = (id: string, text: string) => {
-    const noteObj = notes.find(n => n.id === id);
-    router.push({ pathname: "/dashboard/editNotes", params: {
-      noteIndex: id,
-      noteText: noteObj?.text ?? "",
-      noteTitle: noteObj?.title ?? "",
-      noteColor: noteObj?.color ?? ""
-    }});
-  };
-
   return (
-    <View style={styles.root}>
-      <Text style={styles.title}>Add Note</Text>
+    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
+      {/* Header with back button */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.push('/home')}
+        >
+          <MaterialIcons name="arrow-back" size={28} color={themeColors.textPrimary} />
+        </TouchableOpacity>
+        <Text style={[styles.title, { color: themeColors.textPrimary }]}>Add Note</Text>
+      </View>
+      
       <TextInput
-        style={styles.input}
+        style={[styles.input, { 
+          backgroundColor: themeColors.cardBackground, 
+          borderColor: themeColors.border, 
+          color: themeColors.textPrimary 
+        }]}
         placeholder="Title"
+        placeholderTextColor={themeColors.textMuted}
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { 
+          backgroundColor: themeColors.cardBackground, 
+          borderColor: themeColors.border, 
+          color: themeColors.textPrimary 
+        }]}
         placeholder="Enter your note"
+        placeholderTextColor={themeColors.textMuted}
         value={note}
         onChangeText={setNote}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Color (e.g. red)"
-        value={color}
-        onChangeText={setColor}
       />
       
       {/* Category Selection */}
       <View style={styles.categoryContainer}>
-        <Text style={styles.categoryLabel}>Category:</Text>
+        <Text style={[styles.categoryLabel, { color: themeColors.textSecondary }]}>Category:</Text>
         <View style={styles.categoryButtons}>
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
               style={[
                 styles.categoryButton,
+                { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border },
                 category === cat && styles.selectedCategoryButton
               ]}
               onPress={() => setCategory(cat)}
             >
               <Text style={[
                 styles.categoryButtonText,
+                { color: themeColors.textSecondary },
                 category === cat && styles.selectedCategoryButtonText
               ]}>
                 {cat}
@@ -170,47 +168,6 @@ export default function AddNotes() {
         </View>
       )}
       <Button title="Add Note" onPress={handleAddNote} />
-  <Text style={styles.subtitle}>Your Notes:</Text>
-      <FlatList
-        data={notes}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={[styles.noteRow, { backgroundColor: item.color || '#fff' }]}> 
-            <View style={styles.noteContent}>
-              <Text style={styles.noteTitle}>{item.title}</Text>
-              {item.file ? (
-                <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
-                  <Text style={styles.fileLink}>PDF Note: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
-                </TouchableOpacity>
-              ) : (
-                <Text style={styles.noteText}>Text Note: {item.text}</Text>
-              )}
-            </View>
-            <View style={styles.noteActions}>
-              <TouchableOpacity onPress={() => handleEditNote(item.id, item.text)}>
-                <Text style={styles.edit}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteNote(item.id)}>
-                <Text style={styles.delete}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
-      <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navButton} onPress={() => router.replace('/home')}>
-          <MaterialIcons name="home" size={28} color="#007bff" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => router.replace('/dashboard/addNotes')}>
-          <MaterialIcons name="note-add" size={28} color="#007bff" />
-          <Text style={styles.navText}>Add Note</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => router.push('/profile')}>
-          <MaterialIcons name="person" size={28} color="#007bff" />
-          <Text style={styles.navText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 
@@ -227,12 +184,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: width > 600 ? 48 : 16,
     paddingVertical: 16,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
   title: {
     fontSize: width > 600 ? 28 : 22,
     fontWeight: 'bold',
-    marginBottom: 16,
     color: '#1976d2',
-    textAlign: 'center',
+    flex: 1,
   },
   input: {
     borderWidth: 1,
@@ -252,59 +217,6 @@ const styles = StyleSheet.create({
   },
   fileInfo: {
     marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: width > 600 ? 22 : 18,
-    fontWeight: 'bold',
-    marginTop: 24,
-    marginBottom: 8,
-    color: '#1976d2',
-  },
-  noteRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    minHeight: 48,
-    marginBottom: 4,
-    borderRadius: 8,
-    gap: 8,
-  },
-  noteContent: {
-    flex: 1,
-  },
-  noteTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  noteText: {
-    fontSize: 15,
-    color: '#333',
-    flexWrap: 'wrap',
-    marginRight: 8,
-  },
-  fileLink: {
-    color: '#007bff',
-    textDecorationLine: 'underline',
-    marginTop: 8,
-  },
-  noteActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 0,
-    gap: 12,
-  },
-  edit: {
-    color: '#1976d2',
-    marginRight: 16,
-    fontWeight: 'bold',
-  },
-  delete: {
-    color: '#d32f2f',
-    fontWeight: 'bold',
   },
   categoryContainer: {
     marginBottom: 16,
@@ -344,24 +256,5 @@ const styles = StyleSheet.create({
   selectedCategoryButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderColor: '#eee',
-    marginTop: 16,
-  },
-  navButton: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  navText: {
-    fontSize: 14,
-    color: '#007bff',
-    marginTop: 4,
   },
 });
