@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
-import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../../context/NotesContext";
 
 export default function EditNotes() {
   const router = useRouter();
-  const { noteIndex, noteText, noteColor, noteTitle } = useLocalSearchParams();
+  const { noteIndex, noteText, noteColor, noteTitle, noteCategory } = useLocalSearchParams();
   const { updateNote } = useContext(NotesContext);
   const [title, setTitle] = useState(
     typeof noteTitle === "string" ? noteTitle : Array.isArray(noteTitle) ? noteTitle[0] : ""
@@ -16,6 +16,11 @@ export default function EditNotes() {
   const [color, setColor] = useState(
     typeof noteColor === "string" ? noteColor : Array.isArray(noteColor) ? noteColor[0] : ""
   );
+  const [category, setCategory] = useState(
+    typeof noteCategory === "string" ? noteCategory : Array.isArray(noteCategory) ? noteCategory[0] : "All notes"
+  );
+
+  const categories = ["All notes", "Personal", "Work", "Others"];
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -27,8 +32,8 @@ export default function EditNotes() {
       return;
     }
     try {
-      await updateNote(noteIndex as string, note, undefined, color, title);
-      router.replace("/dashboard/addNotes");
+      await updateNote(noteIndex as string, note, undefined, color, title, category);
+      router.replace("/home");
     } catch (err: any) {
       Alert.alert("Error", err.message);
     }
@@ -55,6 +60,29 @@ export default function EditNotes() {
         value={color}
         onChangeText={setColor}
       />
+      
+      {/* Category Selection */}
+      <Text style={styles.categoryTitle}>Category:</Text>
+      <View style={styles.categoryContainer}>
+        {categories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[
+              styles.categoryButton,
+              category === cat && styles.selectedCategoryButton
+            ]}
+            onPress={() => setCategory(cat)}
+          >
+            <Text style={[
+              styles.categoryButtonText,
+              category === cat && styles.selectedCategoryButtonText
+            ]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      
       <Button title="Save" onPress={handleSave} />
     </View>
   );
@@ -89,5 +117,44 @@ const styles = StyleSheet.create({
     color: '#222',
     width: '100%',
     maxWidth: 400,
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#1976d2',
+    alignSelf: 'flex-start',
+    width: '100%',
+    maxWidth: 400,
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 20,
+    width: '100%',
+    maxWidth: 400,
+  },
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    margin: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#90caf9',
+    backgroundColor: '#f8f9fa',
+  },
+  selectedCategoryButton: {
+    backgroundColor: '#007bff',
+    borderColor: '#007bff',
+  },
+  categoryButtonText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  selectedCategoryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
