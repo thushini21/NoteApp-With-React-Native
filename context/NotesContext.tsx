@@ -3,12 +3,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { db } from "../firebase";
 import { AuthContext } from "./AuthContext";
 
-type Note = { id: string; text: string; uid: string; tag?: string; color?: string; title?: string; image?: string; file?: { uri: string; name: string }; deleted?: boolean };
+type Note = { id: string; text: string; uid: string; tag?: string; color?: string; title?: string; image?: string; file?: { uri: string; name: string }; category?: string; deleted?: boolean };
 interface NotesContextType {
   notes: Note[];
   deletedNotes: Note[];
-  addNote: (text: string, tag?: string, color?: string, title?: string, image?: string, file?: { uri: string; name: string }) => Promise<void>;
-  updateNote: (id: string, text: string, tag?: string, color?: string, title?: string) => Promise<void>;
+  addNote: (text: string, tag?: string, color?: string, title?: string, image?: string, file?: { uri: string; name: string }, category?: string) => Promise<void>;
+  updateNote: (id: string, text: string, tag?: string, color?: string, title?: string, category?: string) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
   fetchNotes: () => Promise<void>;
   fetchDeletedNotes: () => Promise<void>;
@@ -49,9 +49,9 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     setDeletedNotes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Note)));
   };
 
-  const addNote = async (text: string, tag?: string, color?: string, title?: string, image?: string, file?: { uri: string; name: string }) => {
+  const addNote = async (text: string, tag?: string, color?: string, title?: string, image?: string, file?: { uri: string; name: string }, category?: string) => {
     if (!user) return;
-    const noteData: any = { text, uid: user.uid, tag, color, title };
+    const noteData: any = { text, uid: user.uid, tag, color, title, category: category || "All notes" };
     if (image !== undefined) noteData.image = image;
     if (file !== undefined) noteData.file = file;
     noteData.deleted = false;
@@ -59,13 +59,14 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     fetchNotes();
   };
 
-  const updateNote = async (id: string, text: string, tag?: string, color?: string, title?: string) => {
+  const updateNote = async (id: string, text: string, tag?: string, color?: string, title?: string, category?: string) => {
     // Remove undefined fields
     const updateData: Record<string, any> = {};
     if (text !== undefined) updateData.text = text;
     if (tag !== undefined) updateData.tag = tag;
     if (color !== undefined) updateData.color = color;
     if (title !== undefined) updateData.title = title;
+    if (category !== undefined) updateData.category = category;
     await updateDoc(doc(db, "notes", id), updateData);
     fetchNotes();
   };
