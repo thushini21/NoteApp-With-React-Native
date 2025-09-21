@@ -2,23 +2,24 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../../context/NotesContext";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function EditNotes() {
   const router = useRouter();
   const { noteIndex, noteText, noteColor, noteTitle, noteCategory } = useLocalSearchParams();
   const { updateNote } = useContext(NotesContext);
+  const { theme, themeColors } = useTheme();
   const [title, setTitle] = useState(
     typeof noteTitle === "string" ? noteTitle : Array.isArray(noteTitle) ? noteTitle[0] : ""
   );
   const [note, setNote] = useState(
     typeof noteText === "string" ? noteText : Array.isArray(noteText) ? noteText[0] : ""
   );
-  const [color, setColor] = useState(
-    typeof noteColor === "string" ? noteColor : Array.isArray(noteColor) ? noteColor[0] : ""
-  );
   const [category, setCategory] = useState(
     typeof noteCategory === "string" ? noteCategory : Array.isArray(noteCategory) ? noteCategory[0] : "All notes"
   );
+
+  const defaultColor = "#f0e68c"; // Khaki color
 
   const categories = ["All notes", "Personal", "Work", "Others"];
 
@@ -32,7 +33,7 @@ export default function EditNotes() {
       return;
     }
     try {
-      await updateNote(noteIndex as string, note, undefined, color, title, category);
+      await updateNote(noteIndex as string, note, undefined, defaultColor, title, category);
       router.replace("/home");
     } catch (err: any) {
       Alert.alert("Error", err.message);
@@ -40,25 +41,29 @@ export default function EditNotes() {
   };
 
   return (
-    <View style={styles.root}>
-      <Text style={styles.title}>Edit Note</Text>
+    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
+      <Text style={[styles.title, { color: themeColors.textPrimary }]}>Edit Note</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { 
+          backgroundColor: themeColors.cardBackground, 
+          borderColor: themeColors.border, 
+          color: themeColors.textPrimary 
+        }]}
         placeholder="Title"
+        placeholderTextColor={themeColors.textMuted}
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { 
+          backgroundColor: themeColors.cardBackground, 
+          borderColor: themeColors.border, 
+          color: themeColors.textPrimary 
+        }]}
         placeholder="Enter your note"
+        placeholderTextColor={themeColors.textMuted}
         value={note}
         onChangeText={setNote}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Color (e.g. red)"
-        value={color}
-        onChangeText={setColor}
       />
       
       {/* Category Selection */}
