@@ -3,70 +3,115 @@ import { useRouter } from "expo-router";
 import React, { useContext } from "react";
 import { Alert, Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../context/NotesContext";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Home() {
-  const { notes, deleteNote } = useContext(NotesContext);
+  const { notes, deleteNote, archiveNote } = useContext(NotesContext);
+  const { theme, themeColors } = useTheme();
   const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState("All notes");
-
-  const categories = ["All notes", "Personal", "Work", "Others"];
-
-  const handleEditNote = (id: string, text: string) => {
-    router.push({ pathname: "/dashboard/editNotes", params: { noteIndex: id, noteText: text } });
-  };
 
   const handleAddNote = () => {
     router.push("/dashboard/addNotes");
   };
 
-  const handleDeleteNote = (noteId: string, noteTitle: string) => {
+  const handleDeleteNote = (id: string) => {
     Alert.alert(
       "Delete Note",
-      `Are you sure you want to delete "${noteTitle}"?`,
+      "Are you sure you want to delete this note?",
       [
         { text: "Cancel", style: "cancel" },
         { 
           text: "Delete", 
-          style: "destructive",
-          onPress: () => deleteNote(noteId)
+          onPress: async () => {
+            await deleteNote(id);
+            router.push('/dashboard/recycleBin');
+          },
+          style: "destructive" 
         }
       ]
     );
   };
 
+  const handleEditNote = (item: any) => {
+    router.push({ 
+      pathname: "/dashboard/editNotes", 
+      params: {
+        noteIndex: item.id,
+        noteText: item.text ?? "",
+        noteTitle: item.title ?? "",
+        noteColor: item.color ?? ""
+      }
+    });
+  };
+
+  const handleArchiveNote = (id: string) => {
+    Alert.alert(
+      "Archive Note",
+      "Are you sure you want to archive this note?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Archive", 
+          onPress: async () => {
+            await archiveNote(id);
+            router.push('/dashboard/archivedNotes');
+          }
+        }
+      ]
+    );
+  };
+
+  // Define standard categories
+  const categories = ["All notes", "Personal", "Work", "Others"];
+  
   // Filter notes by search text and category
   const filteredNotes = notes.filter(note => {
-    const matchesSearch = note.title?.toLowerCase().includes(search.toLowerCase()) || note.text.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === "All notes" || note.category === selectedCategory || (!note.category && selectedCategory === "All notes");
-    return matchesSearch && matchesCategory;
+    const matchesSearch = note.title?.toLowerCase().includes(search.toLowerCase()) || 
+                         note.text.toLowerCase().includes(search.toLowerCase());
+    
+    if (selectedCategory === "All notes") {
+      return matchesSearch; // Show all notes regardless of category
+    } else {
+      // For specific categories, match exactly
+      return matchesSearch && note.category === selectedCategory;
+    }
   });
 
   return (
-    <View style={styles.root}>
-      <Text style={styles.title}>Your Notes</Text>
+    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
+      <Text style={[styles.title, { color: themeColors.textPrimary }]}>Your Notes</Text>
+      
       <TextInput
-        style={styles.input}
+        style={[styles.input, { 
+          backgroundColor: themeColors.cardBackground, 
+          borderColor: themeColors.border, 
+          color: themeColors.textPrimary 
+        }]}
         placeholder="Search notes..."
+        placeholderTextColor={themeColors.textMuted}
         value={search}
         onChangeText={setSearch}
       />
       
       {/* Category Filter Buttons */}
       <View style={styles.categoryContainer}>
-        <Text style={styles.categoryLabel}>Categories:</Text>
+        <Text style={[styles.categoryLabel, { color: themeColors.textSecondary }]}>Categories:</Text>
         <View style={styles.categoryButtons}>
-          {categories.map((category) => (
+          {categories.map((category: string) => (
             <TouchableOpacity
               key={category}
               style={[
                 styles.categoryButton,
+                { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border },
                 selectedCategory === category && styles.selectedCategoryButton
               ]}
               onPress={() => setSelectedCategory(category)}
             >
               <Text style={[
                 styles.categoryButtonText,
+                { color: themeColors.textSecondary },
                 selectedCategory === category && styles.selectedCategoryButtonText
               ]}>
                 {category}
@@ -80,51 +125,52 @@ export default function Home() {
         data={filteredNotes}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={[styles.noteBox, { backgroundColor: item.color || '#fff' }] }>
+          <View style={[styles.noteBox, { 
+            backgroundColor: theme === 'dark' ? '#333' : (item.color || '#fff'),
+            borderColor: themeColors.border 
+          }]}>
             <View style={styles.noteHeader}>
               <View style={styles.noteTitleSection}>
-                <Text style={styles.noteTitle}>{item.title}</Text>
+                <Text style={[styles.noteTitle, { color: themeColors.textPrimary }]}>{item.title}</Text>
                 {item.category && (
-                  <Text style={styles.noteCategory}>📁 {item.category}</Text>
+                  <Text style={[styles.noteCategory, { color: themeColors.textSecondary }]}>📁 {item.category}</Text>
                 )}
               </View>
+              {/* Action Buttons */}
               <View style={styles.noteActions}>
                 <TouchableOpacity 
-                  style={styles.editButton}
-                  onPress={() => router.push({
-                    pathname: '/dashboard/editNotes',
-                    params: {
-                      noteIndex: item.id || '',
-                      noteTitle: item.title || '',
-                      noteText: item.text || '',
-                      noteColor: item.color || '#fff',
-                      noteCategory: item.category || 'All notes'
-                    }
-                  })}
+                  style={styles.actionButton} 
+                  onPress={() => handleEditNote(item)}
                 >
-                  <MaterialIcons name="edit" size={20} color="#007bff" />
+                  <MaterialIcons name="edit" size={20} color="#1976d2" />
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  style={styles.deleteButton}
-                  onPress={() => handleDeleteNote(item.id || '', item.title || '')}
+                  style={styles.actionButton} 
+                  onPress={() => handleArchiveNote(item.id)}
                 >
-                  <MaterialIcons name="delete" size={20} color="#ff4444" />
+                  <MaterialIcons name="archive" size={20} color="#ff9800" />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.actionButton} 
+                  onPress={() => handleDeleteNote(item.id)}
+                >
+                  <MaterialIcons name="delete" size={20} color="#d32f2f" />
                 </TouchableOpacity>
               </View>
             </View>
             <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
               {item.file ? (
-                <Text style={styles.fileLink}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
+                <Text style={[styles.fileLink, { color: themeColors.textSecondary }]}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
               ) : null}
               {item.text ? (
-                <Text style={styles.noteText}>{item.text}</Text>
+                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>{item.text}</Text>
               ) : item.file ? (
-                <Text style={styles.noteText}>[File note]</Text>
+                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>[File note]</Text>
               ) : null}
             </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No notes found.</Text>}
+        ListEmptyComponent={<Text style={[styles.empty, { color: themeColors.textMuted }]}>No notes found.</Text>}
       />
       
       {/* Floating Add Button */}
@@ -135,6 +181,7 @@ export default function Home() {
         <MaterialIcons name="add" size={28} color="#fff" />
       </TouchableOpacity>
 
+      {/* Bottom Navigation Bar */}
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navButton} onPress={() => router.replace('/home')}>
           <MaterialIcons name="home" size={28} color="#007bff" />
@@ -308,17 +355,12 @@ const styles = StyleSheet.create({
   noteActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  editButton: {
-    padding: 8,
-    marginRight: 4,
+  actionButton: {
+    padding: 6,
     borderRadius: 6,
-    backgroundColor: '#e8f4fd',
-  },
-  deleteButton: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: '#ffebee',
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
 });
 
