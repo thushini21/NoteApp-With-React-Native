@@ -32,10 +32,13 @@ export default function AddNotes() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [color, setColor] = useState("");
+  const [category, setCategory] = useState("All notes");
   const [file, setFile] = useState<{ uri: string, name: string }|null>(null);
   const [image, setImage] = useState<{ uri: string, name: string }|null>(null);
   const { notes, addNote, deleteNote } = useContext(NotesContext);
   const router = useRouter();
+
+  const categories = ["All notes", "Personal", "Work", "Others"];
 
   const handleAddNote = async () => {
     if (!title.trim()) {
@@ -55,10 +58,11 @@ export default function AddNotes() {
       if (imageToStore) {
         Alert.alert('Note', 'Images are only available on this device. They will not sync across devices.');
       }
-      await addNote(note, "", color, title, imageToStore, fileToStore);
+      await addNote(note, "", color, title, imageToStore, fileToStore, category);
       setTitle("");
       setNote("");
       setColor("");
+      setCategory("All notes");
       setFile(null);
       setImage(null);
     } catch (err) {
@@ -109,6 +113,31 @@ export default function AddNotes() {
         value={color}
         onChangeText={setColor}
       />
+      
+      {/* Category Selection */}
+      <View style={styles.categoryContainer}>
+        <Text style={styles.categoryLabel}>Category:</Text>
+        <View style={styles.categoryButtons}>
+          {categories.map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              style={[
+                styles.categoryButton,
+                category === cat && styles.selectedCategoryButton
+              ]}
+              onPress={() => setCategory(cat)}
+            >
+              <Text style={[
+                styles.categoryButtonText,
+                category === cat && styles.selectedCategoryButtonText
+              ]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+      
       <View style={styles.fileRow}>
         <Button title="Pick File" onPress={async () => {
           const result = await DocumentPicker.getDocumentAsync({ type: ['application/pdf'], multiple: false });
@@ -275,6 +304,45 @@ const styles = StyleSheet.create({
   },
   delete: {
     color: '#d32f2f',
+    fontWeight: 'bold',
+  },
+  categoryContainer: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#90caf9',
+  },
+  categoryLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1976d2',
+    marginBottom: 8,
+  },
+  categoryButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  selectedCategoryButton: {
+    backgroundColor: '#1976d2',
+    borderColor: '#1976d2',
+  },
+  categoryButtonText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  selectedCategoryButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
   navBar: {
