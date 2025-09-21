@@ -8,6 +8,9 @@ export default function Home() {
   const { notes } = useContext(NotesContext);
   const router = useRouter();
   const [search, setSearch] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = React.useState("All notes");
+
+  const categories = ["All notes", "Personal", "Work", "Others"];
 
   const handleEditNote = (id: string, text: string) => {
     router.push({ pathname: "/dashboard/editNotes", params: { noteIndex: id, noteText: text } });
@@ -17,10 +20,12 @@ export default function Home() {
     router.push("/dashboard/addNotes");
   };
 
-  // Filter notes by search text
-  const filteredNotes = notes.filter(note =>
-  (note.title?.toLowerCase().includes(search.toLowerCase()) || note.text.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Filter notes by search text and category
+  const filteredNotes = notes.filter(note => {
+    const matchesSearch = note.title?.toLowerCase().includes(search.toLowerCase()) || note.text.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = selectedCategory === "All notes" || note.category === selectedCategory || (!note.category && selectedCategory === "All notes");
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <View style={styles.root}>
@@ -31,12 +36,40 @@ export default function Home() {
         value={search}
         onChangeText={setSearch}
       />
+      
+      {/* Category Filter Buttons */}
+      <View style={styles.categoryContainer}>
+        <Text style={styles.categoryLabel}>Categories:</Text>
+        <View style={styles.categoryButtons}>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={[
+                styles.categoryButton,
+                selectedCategory === category && styles.selectedCategoryButton
+              ]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text style={[
+                styles.categoryButtonText,
+                selectedCategory === category && styles.selectedCategoryButtonText
+              ]}>
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+      
       <FlatList
         data={filteredNotes}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={[styles.noteBox, { backgroundColor: item.color || '#fff' }] }>
             <Text style={styles.noteTitle}>{item.title}</Text>
+            {item.category && (
+              <Text style={styles.noteCategory}>📁 {item.category}</Text>
+            )}
             <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
               {item.file ? (
                 <Text style={styles.fileLink}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
@@ -122,6 +155,54 @@ const styles = StyleSheet.create({
     color: '#007bff',
     textDecorationLine: 'underline',
     marginTop: 8,
+  },
+  noteCategory: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+    fontStyle: 'italic',
+  },
+  categoryContainer: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  categoryLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1976d2',
+    marginBottom: 8,
+  },
+  categoryButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  selectedCategoryButton: {
+    backgroundColor: '#007bff',
+    borderColor: '#007bff',
+  },
+  categoryButtonText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  selectedCategoryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   empty: {
     textAlign: 'center',
