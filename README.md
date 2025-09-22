@@ -74,6 +74,9 @@ A complete cross-platform mobile note-taking application built with React Native
 | Demo Video |  All features working |
 
 
+![WhatsApp Image 2025-09-22 at 10 36 35_2c7b0432](https://github.com/user-attachments/assets/bdb9755f-7196-4f57-bff4-0c705b0edc22)
+
+![WhatsApp Image 2025-09-22 at 10 36 31_70a227fa](https://github.com/user-attachments/assets/d6ddac37-cdac-4ba1-a748-f8097e5956c9)
 
 ![WhatsApp Image 2025-09-22 at 10 36 30_07816146](https://github.com/user-attachments/assets/10f5c969-1bf6-4bf3-9ab9-6cf7182ff3bd)
 
@@ -100,5 +103,3 @@ https://youtube.com/shorts/bvmrnNG6HHM?feature=share
 - **Subject**: Advanced Mobile Development (AMD)
 - **Project Type**: Final Coursework Assignment
 
----
-*Built with React Native Expo and Firebase for educational purposes*
