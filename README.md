@@ -1,50 +1,83 @@
-# Welcome to your Expo app 👋
+# QuickNotes - React Native Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Project Overview
+A complete cross-platform mobile note-taking application built with React Native Expo, featuring Firebase authentication and real-time data synchronization.
 
-## Get started
+## 🚀 Features Implemented
 
-1. Install dependencies
+### ✅ Core Requirements
+- **Frontend**: React Native Expo with TypeScript
+- **Backend**: Firebase Firestore & Authentication
+- **State Management**: React Context API (AuthContext, NotesContext, ThemeContext)
+- **Authentication**: Firebase Auth (Login/Register/Logout)
+- **CRUD Operations**: Complete Create, Read, Update, Delete for notes
+- **Navigation**: Expo Router with file-based routing
+- **Mobile UI**: Responsive and user-friendly interface
 
-   ```bash
-   npm install
-   ```
+### 📱 Advanced Features
+- **Categories**: Personal, Work, Others note categorization
+- **Archive System**: Archive/restore notes functionality
+- **Recycle Bin**: Delete/restore notes with soft delete
+- **Themes**: Light/Dark mode support
+- **File Attachments**: PDF file support
+- **Image Support**: Photo attachments
+- **Search**: Real-time note search functionality
+- **Responsive Design**: Works on tablets and phones
 
-2. Start the app
+## 🔧 Technology Stack
+- **Frontend**: React Native, Expo SDK 50+, TypeScript
+- **Backend**: Firebase (Firestore, Authentication)
+- **Navigation**: Expo Router
+- **Styling**: React Native StyleSheet with responsive design
+- **State Management**: React Context API
+- **Icons**: MaterialIcons from @expo/vector-icons
 
-   ```bash
-   npx expo start
-   ```
+## 📦 Installation & Setup
 
-In the output, you'll find options to open the app in a
+### Prerequisites
+- Node.js (v16+)
+- Expo Go app on mobile device
+- Firebase project setup
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Steps
+1. Clone repository
+2. Install dependencies: `npm install`
+3. Start development server: `npx expo start`
+4. Scan QR code with Expo Go app
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🏗️ Build Information
 
-## Get a fresh project
+### Development Build (Expo Go) ✅
+- **Status**: Working and tested on mobile device
+- **Platform**: Android & iOS compatible
+- **Access Method**: Expo Go app with QR code scanning
+- **Valid for Assignment**: Yes (meets "Expo build or equivalent" requirement)
 
-When you're ready, run:
+## 📱 How to Run the App
+1. Download **Expo Go** from Play Store/App Store
+2. Run `npx expo start` in terminal
+3. Scan the QR code with Expo Go app
+4. App will load on your mobile device
 
-```bash
-npm run reset-project
-```
+## 🎯 Assignment Requirements Met
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+| Requirement | Status | Implementation |
+|-------------|--------|---------------|
+| Frontend Mobile App | ✅ Complete | React Native Expo |
+| Backend/Data Persistence | ✅ Complete | Firebase Firestore |
+| State Management | ✅ Complete | React Context API |
+| Authentication | ✅ Complete | Firebase Auth |
+| CRUD Operations | ✅ Complete | Full note management |
+| Navigation | ✅ Complete | Expo Router |
+| Mobile UI | ✅ Complete | Responsive design |
+| Build | ✅ Complete | Expo Go development build |
+| Demo Video | 🔄 Ready to record | All features working |
 
-## Learn more
+## 👨‍💻 Developer Information
+- **Name**: Thushini Akashi
+- **Course**: GDSE_69 - 3rd Semester
+- **Subject**: Advanced Mobile Development (AMD)
+- **Project Type**: Final Coursework Assignment
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+*Built with React Native Expo and Firebase for educational purposes*
