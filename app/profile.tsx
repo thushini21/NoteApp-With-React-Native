@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Dimensions, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Dimensions, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AuthContext, AuthContextType } from '../context/AuthContext';
 import { NotesContext } from '../context/NotesContext';
 import { useTheme } from '../context/ThemeContext';
@@ -13,15 +14,34 @@ export default function Profile() {
   }, []);
   const { user, logout } = useContext(AuthContext) as AuthContextType;
   const { deletedNotes, restoreNote, fetchDeletedNotes, archivedNotes, unarchiveNote, fetchArchivedNotes } = useContext(NotesContext);
-  const { theme, fontSize, themeColors, setTheme, setFontSize } = useTheme();
+    const { theme, fontSize, themeColors, toggleTheme, setTheme, setFontSize, increaseFontSize, decreaseFontSize } = useTheme();
   const router = useRouter();
   const [showRecycleBin, setShowRecycleBin] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showPersonalInfo, setShowPersonalInfo] = useState(false);
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
+  const [slideAnim] = useState(new Animated.Value(-300)); // Start off-screen
   
   // Extract username from email (before @)
   const username = user?.email ? user.email.split('@')[0] : '';
+
+  // Side Menu Animation Functions
+  const openSideMenu = () => {
+    setSideMenuOpen(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeSideMenu = () => {
+    Animated.timing(slideAnim, {
+      toValue: -300,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setSideMenuOpen(false));
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -75,46 +95,138 @@ export default function Profile() {
       imageStyle={{ opacity: theme === 'dark' ? 0.15 : 0.25 }}
     >
       <View style={[styles.rootOverlay, { backgroundColor: themeColors.background }]}>
-        <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+        {/* Hamburger Menu Button */}
+        <TouchableOpacity 
+          style={styles.hamburgerButton} 
+          onPress={openSideMenu}
+        >
+          <MaterialIcons name="menu" size={28} color={themeColors.textPrimary} />
+        </TouchableOpacity>
+
+        {/* Side Menu Overlay */}
+        {sideMenuOpen && (
+          <TouchableOpacity 
+            style={styles.overlay} 
+            activeOpacity={1} 
+            onPress={closeSideMenu}
+          >
+            <View />
+          </TouchableOpacity>
+        )}
+
+        {/* Side Menu */}
+        <Animated.View style={[styles.sideMenu, { transform: [{ translateX: slideAnim }] }]}>
+          <View style={styles.sideMenuHeader}>
+            <TouchableOpacity onPress={closeSideMenu} style={styles.closeButton}>
+              <MaterialIcons name="close" size={24} color={themeColors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.sideMenuTitle, { color: themeColors.textPrimary }]}>Menu</Text>
+          </View>
           
-          {/* Main Action Buttons - Archive & Recycle Bin */}
-          <View style={styles.mainActionsContainer}>
-            <TouchableOpacity style={[styles.mainActionCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} onPress={handleShowArchive}>
-              <Text style={styles.mainActionIcon}>📦</Text>
-              <Text style={[styles.mainActionTitle, { color: themeColors.textPrimary }]}>Archive</Text>
-              <View style={styles.mainCountBadge}>
-                <Text style={styles.mainCountText}>{archivedNotes.length}</Text>
+          <View style={styles.sideMenuContent}>
+            <TouchableOpacity 
+              style={[styles.sideMenuItem, { backgroundColor: themeColors.cardBackground }]} 
+              onPress={() => {
+                closeSideMenu();
+                router.push('/home');
+              }}
+            >
+              <MaterialIcons name="home" size={24} color="#2196f3" />
+              <Text style={[styles.sideMenuItemText, { color: themeColors.textPrimary }]}>Home</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.sideMenuItem, { backgroundColor: themeColors.cardBackground }]} 
+              onPress={() => {
+                closeSideMenu();
+                router.push('/settings');
+              }}
+            >
+              <MaterialIcons name="settings" size={24} color="#1976d2" />
+              <Text style={[styles.sideMenuItemText, { color: themeColors.textPrimary }]}>Settings</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.sideMenuItem, { backgroundColor: themeColors.cardBackground }]} 
+              onPress={() => {
+                closeSideMenu();
+                router.push('/personalInfo');
+              }}
+            >
+              <MaterialIcons name="person" size={24} color="#4caf50" />
+              <Text style={[styles.sideMenuItemText, { color: themeColors.textPrimary }]}>Personal Information</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.sideMenuItem, { backgroundColor: themeColors.cardBackground }]} 
+              onPress={() => {
+                closeSideMenu();
+                handleLogout();
+              }}
+            >
+              <MaterialIcons name="logout" size={24} color="#ff5252" />
+              <Text style={[styles.sideMenuItemText, { color: themeColors.textPrimary }]}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+
+        <ScrollView 
+          contentContainerStyle={{ 
+            alignItems: 'center', 
+            justifyContent: 'flex-start', 
+            paddingTop: 100, 
+            paddingBottom: 50,
+            paddingHorizontal: 20 
+          }} 
+          showsVerticalScrollIndicator={false}
+        >
+          
+          {/* Welcome Section */}
+          <View style={[styles.welcomeSection, { backgroundColor: '#ffd700' }]}>
+            <Text style={[styles.welcomeText, { color: themeColors.textPrimary, fontSize: fontSize + 2 }]}>
+              Welcome back, {username}! 👋
+            </Text>
+            <Text style={[styles.welcomeSubtext, { color: themeColors.textMuted, fontSize: fontSize - 2 }]}>
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </Text>
+          </View>
+
+          {/* Extra spacing */}
+          <View style={{ height: 25 }} />
+          
+          {/* Archive & Recycle Bin Buttons */}
+          <View style={styles.topActionsContainer}>
+            <TouchableOpacity style={[styles.topActionCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} onPress={handleShowArchive}>
+              <Text style={styles.topActionIcon}>📦</Text>
+              <Text style={[styles.topActionTitle, { color: themeColors.textPrimary }]}>Archive</Text>
+              <View style={styles.topCountBadge}>
+                <Text style={styles.topCountText}>{archivedNotes.length}</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.mainActionCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} onPress={handleShowRecycleBin}>
-              <Text style={styles.mainActionIcon}>🗑️</Text>
-              <Text style={[styles.mainActionTitle, { color: themeColors.textPrimary }]}>Recycle Bin</Text>
-              <View style={styles.mainCountBadge}>
-                <Text style={styles.mainCountText}>{deletedNotes.length}</Text>
+            <TouchableOpacity style={[styles.topActionCard, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} onPress={handleShowRecycleBin}>
+              <Text style={styles.topActionIcon}>🗑️</Text>
+              <Text style={[styles.topActionTitle, { color: themeColors.textPrimary }]}>Recycle Bin</Text>
+              <View style={styles.topCountBadge}>
+                <Text style={styles.topCountText}>{deletedNotes.length}</Text>
               </View>
             </TouchableOpacity>
           </View>
 
-          {/* Settings Button */}
-          <TouchableOpacity style={styles.menuBtn} onPress={() => {
-            setShowSettings(!showSettings);
-            setShowPersonalInfo(false);
-            setShowRecycleBin(false);
-            setShowArchive(false);
-          }}>
-            <Text style={styles.menuBtnText}>⚙️ Settings</Text>
-          </TouchableOpacity>
-          
-          {/* Personal Information Button */}
-          <TouchableOpacity style={styles.menuBtn} onPress={() => {
-            setShowPersonalInfo(!showPersonalInfo);
-            setShowSettings(false);
-            setShowRecycleBin(false);
-            setShowArchive(false);
-          }}>
-            <Text style={styles.menuBtnText}>👤 Personal Information</Text>
-          </TouchableOpacity>
+          {/* App Logo and Name */}
+          <View style={styles.logoSection}>
+            <Image 
+              source={require('../app/pics/logo.jpg')}
+              style={[styles.appLogo, { borderColor: themeColors.textPrimary }]}
+              resizeMode="contain"
+            />
+            <Text style={[styles.appName, { color: themeColors.textPrimary, fontSize: fontSize + 4 }]}>QuickNotes</Text>
+          </View>
 
           <View style={{ height: 16 }} />
           {showRecycleBin ? (
@@ -189,24 +301,21 @@ export default function Profile() {
               {/* Font Size Selection */}
               <View style={styles.settingSection}>
                 <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>Font Size:</Text>
-                <View style={styles.optionButtons}>
+                <View style={styles.fontSizeControls}>
                   <TouchableOpacity 
-                    style={[styles.optionBtn, { backgroundColor: fontSize === 'small' ? '#2196f3' : themeColors.cardBackground, borderColor: themeColors.border }, fontSize === 'small' && styles.optionBtnActive]}
-                    onPress={() => setFontSize('small')}
+                    style={[styles.fontSizeBtn, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} 
+                    onPress={decreaseFontSize}
                   >
-                    <Text style={[{ color: fontSize === 'small' ? '#fff' : themeColors.textMuted }, fontSize === 'small' && styles.optionTextActive]}>Small</Text>
+                    <Text style={[styles.fontSizeBtnText, { color: themeColors.textPrimary }]}>-</Text>
                   </TouchableOpacity>
+                  <Text style={[styles.fontSizeDisplay, { color: themeColors.textPrimary, fontSize }]}>
+                    {fontSize === 12 ? 'Small' : fontSize === 16 ? 'Medium' : 'Large'} ({fontSize}px)
+                  </Text>
                   <TouchableOpacity 
-                    style={[styles.optionBtn, { backgroundColor: fontSize === 'medium' ? '#2196f3' : themeColors.cardBackground, borderColor: themeColors.border }, fontSize === 'medium' && styles.optionBtnActive]}
-                    onPress={() => setFontSize('medium')}
+                    style={[styles.fontSizeBtn, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]} 
+                    onPress={increaseFontSize}
                   >
-                    <Text style={[{ color: fontSize === 'medium' ? '#fff' : themeColors.textMuted }, fontSize === 'medium' && styles.optionTextActive]}>Medium</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={[styles.optionBtn, { backgroundColor: fontSize === 'large' ? '#2196f3' : themeColors.cardBackground, borderColor: themeColors.border }, fontSize === 'large' && styles.optionBtnActive]}
-                    onPress={() => setFontSize('large')}
-                  >
-                    <Text style={[{ color: fontSize === 'large' ? '#fff' : themeColors.textMuted }, fontSize === 'large' && styles.optionTextActive]}>Large</Text>
+                    <Text style={[styles.fontSizeBtnText, { color: themeColors.textPrimary }]}>+</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -215,43 +324,8 @@ export default function Profile() {
                 <Text style={styles.backText}>Back</Text>
               </TouchableOpacity>
             </View>
-          ) : showPersonalInfo ? (
-            <View style={[styles.personalInfoBox, { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border }]}>
-              <Text style={[styles.personalInfoTitle, { color: themeColors.textPrimary }]}>Personal Information</Text>
-              
-              {/* User Information Display */}
-              <View style={styles.infoSection}>
-                <View style={[styles.infoRow, { backgroundColor: theme === 'dark' ? '#333' : '#f8f9fa' }]}>
-                  <Text style={[styles.infoLabel, { color: themeColors.textSecondary }]}>Username:</Text>
-                  <Text style={[styles.infoValue, { color: themeColors.textPrimary }]}>{username}</Text>
-                </View>
-                <View style={[styles.infoRow, { backgroundColor: theme === 'dark' ? '#333' : '#f8f9fa' }]}>
-                  <Text style={[styles.infoLabel, { color: themeColors.textSecondary }]}>Email:</Text>
-                  <Text style={[styles.infoValue, { color: themeColors.textPrimary }]}>{user?.email}</Text>
-                </View>
-              </View>
-
-              {/* Reset Password Button */}
-              <TouchableOpacity style={styles.resetPasswordBtn} onPress={() => {
-                Alert.alert(
-                  "Reset Password",
-                  "Password reset functionality will be implemented here",
-                  [{ text: "OK" }]
-                );
-              }}>
-                <Text style={styles.resetPasswordText}>🔐 Reset Password</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.backBtn} onPress={() => setShowPersonalInfo(false)}>
-                <Text style={styles.backText}>Back</Text>
-              </TouchableOpacity>
-            </View>
           ) : (
-            <>
-              <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-                <Text style={styles.logoutText}>Logout</Text>
-              </TouchableOpacity>
-            </>
+            <></>
           )}
         </ScrollView>
       </View>
@@ -261,6 +335,25 @@ export default function Profile() {
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
+  hamburgerButton: {
+    position: 'absolute',
+    top: 45,
+    left: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 28,
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#1976d2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
+    borderWidth: 2,
+    borderColor: 'rgba(25, 118, 210, 0.1)',
+  },
   logo: {
     width: width > 600 ? 160 : 120,
     height: width > 600 ? 160 : 120,
@@ -817,6 +910,197 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+  },
+  sideMenu: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 300,
+    height: '100%',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+    zIndex: 1001,
+  },
+  sideMenuHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    paddingTop: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#f8f9fa',
+  },
+  closeButton: {
+    padding: 5,
+  },
+  sideMenuTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  sideMenuContent: {
+    padding: 20,
+  },
+  sideMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: '#f8f9fa',
+  },
+  sideMenuItemText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 15,
+    color: '#333',
+  },
+  fontSizeControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  fontSizeBtn: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fontSizeBtnText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  fontSizeDisplay: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    minWidth: 120,
+  },
+  topActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: 320,
+    marginBottom: 35,
+    paddingHorizontal: 5,
+  },
+  topActionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '47%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+    minHeight: 110,
+    transform: [{ scale: 1 }],
+  },
+  topActionIcon: {
+    fontSize: 32,
+    marginBottom: 10,
+  },
+  topActionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  topCountBadge: {
+    backgroundColor: '#1976d2',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    minWidth: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topCountText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  logoSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+    marginTop: 20,
+  },
+  appLogo: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    marginBottom: 20,
+    shadowColor: '#1976d2',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 5,
+    borderColor: '#fff',
+  },
+  logoText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  appName: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1976d2',
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  welcomeSection: {
+    width: '100%',
+    backgroundColor: '#ffd700',
+    borderRadius: 20,
+    padding: 25,
+    marginBottom: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  welcomeSubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });
 
