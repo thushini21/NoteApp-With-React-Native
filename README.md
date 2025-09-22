@@ -95,7 +95,7 @@ A complete cross-platform mobile note-taking application built with React Native
 
 Demo Video
 
-https://youtube.com/shorts/bvmrnNG6HHM?feature=share
+https://youtube.com/shorts/mO5900pJTic?si=AfS-z2XMDQqDJxlD 
 
 ## 👨‍💻 Developer Information
 - **Name**: Thushini Akashi
