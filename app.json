@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "my-note-app",
+    "name": "QuickNotes",
     "slug": "my-note-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mynoteapp",
+    "scheme": "quicknotes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    
+    "description": "A complete note-taking app with Firebase sync, categories, themes, and file attachments.",
+    "privacy": "public",
     "ios": {
       "supportsTablet": true
     },
@@ -17,7 +18,14 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.thushini0223.quicknotes",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +46,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cb3f04cc-1efb-4db4-9600-e9a6c9a3d4d2"
+      }
     }
   }
 }
