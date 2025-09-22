@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type Theme = 'light' | 'dark';
-type FontSize = 'small' | 'medium' | 'large';
 
 interface ThemeColors {
   background: string;
@@ -15,10 +14,13 @@ interface ThemeColors {
 
 interface ThemeContextType {
   theme: Theme;
-  fontSize: FontSize;
+  fontSize: number;
   themeColors: ThemeColors;
   setTheme: (theme: Theme) => void;
-  setFontSize: (fontSize: FontSize) => void;
+  toggleTheme: () => void;
+  setFontSize: (fontSize: number) => void;
+  increaseFontSize: () => void;
+  decreaseFontSize: () => void;
 }
 
 const lightTheme: ThemeColors = {
@@ -45,14 +47,26 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');
-  const [fontSize, setFontSizeState] = useState<FontSize>('medium');
+  const [fontSize, setFontSizeState] = useState<number>(16);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
 
-  const setFontSize = (newFontSize: FontSize) => {
-    setFontSizeState(newFontSize);
+  const toggleTheme = () => {
+    setThemeState(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  const setFontSize = (newFontSize: number) => {
+    setFontSizeState(Math.max(12, Math.min(20, newFontSize))); // Clamp between 12 and 20
+  };
+
+  const increaseFontSize = () => {
+    setFontSizeState(prev => Math.min(20, prev + 2));
+  };
+
+  const decreaseFontSize = () => {
+    setFontSizeState(prev => Math.max(12, prev - 2));
   };
 
   const themeColors = theme === 'dark' ? darkTheme : lightTheme;
@@ -63,7 +77,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       fontSize,
       themeColors,
       setTheme,
-      setFontSize
+      toggleTheme,
+      setFontSize,
+      increaseFontSize,
+      decreaseFontSize
     }}>
       {children}
     </ThemeContext.Provider>
