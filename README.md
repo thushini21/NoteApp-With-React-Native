@@ -1,83 +1,69 @@
-# QuickNotes - React Native Mobile App
+# QuickNotes Mobile App
 
-## Project Overview
-A complete cross-platform mobile note-taking application built with React Native Expo, featuring Firebase authentication and real-time data synchronization.
+A note-taking mobile application built with React Native and Firebase for my AMD coursework project.
 
-## 🚀 Features Implemented
+## Features
 
-### ✅ Core Requirements
-- **Frontend**: React Native Expo with TypeScript
-- **Backend**: Firebase Firestore & Authentication
-- **State Management**: React Context API (AuthContext, NotesContext, ThemeContext)
-- **Authentication**: Firebase Auth (Login/Register/Logout)
-- **CRUD Operations**: Complete Create, Read, Update, Delete for notes
-- **Navigation**: Expo Router with file-based routing
-- **Mobile UI**: Responsive and user-friendly interface
+### Main Features
+- User registration and login
+- Create, edit, and delete notes
+- Organize notes by categories (Personal, Work, Others)
+- Archive important notes
+- Dark/Light theme switching
+- Attach images and files to notes
+- Search through notes
+- Recycle bin for deleted notes
 
-### 📱 Advanced Features
-- **Categories**: Personal, Work, Others note categorization
-- **Archive System**: Archive/restore notes functionality
-- **Recycle Bin**: Delete/restore notes with soft delete
-- **Themes**: Light/Dark mode support
-- **File Attachments**: PDF file support
-- **Image Support**: Photo attachments
-- **Search**: Real-time note search functionality
-- **Responsive Design**: Works on tablets and phones
+### Technical Features
+- Cross-platform (Android & iOS)
+- Real-time data sync with Firebase
+- Responsive design
+- TypeScript support
+- File-based navigation
 
-## 🔧 Technology Stack
-- **Frontend**: React Native, Expo SDK 50+, TypeScript
-- **Backend**: Firebase (Firestore, Authentication)
-- **Navigation**: Expo Router
-- **Styling**: React Native StyleSheet with responsive design
-- **State Management**: React Context API
-- **Icons**: MaterialIcons from @expo/vector-icons
+## Technology Used
+- React Native with Expo
+- Firebase (Authentication + Firestore)
+- TypeScript
+- Expo Router for navigation
+- React Context for state management
+## How to Run
 
-## 📦 Installation & Setup
+### Requirements
+- Node.js installed
+- Expo Go app on your phone
+- Internet connection
 
-### Prerequisites
-- Node.js (v16+)
-- Expo Go app on mobile device
-- Firebase project setup
+### Setup Steps
+1. Clone this repository
+2. Run `npm install` to install dependencies
+3. Run `npx expo start` to start the development server
+4. Open Expo Go app and scan the QR code
+5. The app will load on your phone
 
-### Steps
-1. Clone repository
-2. Install dependencies: `npm install`
-3. Start development server: `npx expo start`
-4. Scan QR code with Expo Go app
+## Project Structure
+```
+app/
+├── (auth)/          # Login/Register screens
+├── dashboard/       # Main app screens
+├── components/      # Reusable components
+context/             # State management
+firebase.ts          # Firebase configuration
+```
 
-## 🏗️ Build Information
+## Assignment Requirements
 
-### Development Build (Expo Go) ✅
-- **Status**: Working and tested on mobile device
-- **Platform**: Android & iOS compatible
-- **Access Method**: Expo Go app with QR code scanning
-- **Valid for Assignment**: Yes (meets "Expo build or equivalent" requirement)
+All requirements completed:
+- ✅ Mobile Frontend (React Native Expo)
+- ✅ Backend Integration (Firebase)
+- ✅ User Authentication
+- ✅ CRUD Operations
+- ✅ State Management
+- ✅ Navigation System
+- ✅ Mobile UI Design
+- ✅ Working Build (Expo Go)
 
-## 📱 How to Run the App
-1. Download **Expo Go** from Play Store/App Store
-2. Run `npx expo start` in terminal
-3. Scan the QR code with Expo Go app
-4. App will load on your mobile device
-
-## 🎯 Assignment Requirements Met
-
-| Requirement | Status | Implementation |
-|-------------|--------|---------------|
-| Frontend Mobile App | ✅ Complete | React Native Expo |
-| Backend/Data Persistence | ✅ Complete | Firebase Firestore |
-| State Management | ✅ Complete | React Context API |
-| Authentication | ✅ Complete | Firebase Auth |
-| CRUD Operations | ✅ Complete | Full note management |
-| Navigation | ✅ Complete | Expo Router |
-| Mobile UI | ✅ Complete | Responsive design |
-| Build | ✅ Complete | Expo Go development build |
-| Demo Video | 🔄 Ready to record | All features working |
-
-## 👨‍💻 Developer Information
-- **Name**: Thushini Akashi
-- **Course**: GDSE_69 - 3rd Semester
-- **Subject**: Advanced Mobile Development (AMD)
-- **Project Type**: Final Coursework Assignment
-
----
-*Built with React Native Expo and Firebase for educational purposes*
+## Developer
+**Thushini Akashi**  
+GDSE_69 - 3rd Semester  
+Advanced Mobile Development Project
