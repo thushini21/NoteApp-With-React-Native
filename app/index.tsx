@@ -1,3 +1,4 @@
+// Main app entry point - handles initial routing
 import { useRouter } from "expo-router";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from "react-native";
@@ -7,6 +8,7 @@ export default function Index() {
   const { user, loading } = useContext(AuthContext);
   const router = useRouter();
 
+  // Redirect based on authentication status
   useEffect(() => {
     if(!loading) {
       if(!user) router.replace("/(auth)/login");
