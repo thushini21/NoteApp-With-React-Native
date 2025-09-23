@@ -1,5 +1,5 @@
+// Authentication context for managing user state
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
-// Use 'User' only as a type
 import React, { createContext, useEffect, useState } from "react";
 import { auth } from "../firebase";
 
