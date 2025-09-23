@@ -1,3 +1,4 @@
+// Login screen component
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
