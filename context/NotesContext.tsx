@@ -1,8 +1,10 @@
+// Notes context for managing all note operations
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { db } from "../firebase";
 import { AuthContext } from "./AuthContext";
 
+// Note type definition
 type Note = { id: string; text: string; uid: string; tag?: string; color?: string; title?: string; image?: string; file?: { uri: string; name: string }; category?: string; deleted?: boolean; archived?: boolean };
 interface NotesContextType {
   notes: Note[];
