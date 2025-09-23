@@ -1,3 +1,4 @@
+// Add Notes screen - main note creation interface
 import { MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -76,7 +77,6 @@ export default function AddNotes() {
 
   return (
     <View style={[styles.root, { backgroundColor: themeColors.background }]}>
-      {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton} 
