@@ -10,7 +10,6 @@ export default function StatusBarInfo() {
   const [networkType, setNetworkType] = useState('');
 
   useEffect(() => {
-    // Time updater
     const updateTime = () => {
       const now = new Date();
       setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -34,7 +33,6 @@ export default function StatusBarInfo() {
   }, []);
 
   useEffect(() => {
-    // Network updater
     const getNetwork = async () => {
       try {
         const net = await Network.getNetworkStateAsync();
@@ -48,15 +46,13 @@ export default function StatusBarInfo() {
 
   return (
     <View style={styles.container}>
-      {/* Left: Time */}
+      
       <Text style={styles.time}>{time}</Text>
-      {/* Center: Signal & Network */}
       <View style={styles.centerBox}>
         <Ionicons name="cellular" size={18} color="#1976d2" style={{ marginRight: 4 }} />
         <Text style={styles.network}>{networkType}</Text>
         <MaterialCommunityIcons name="wifi" size={18} color={networkType === 'WIFI' ? '#1976d2' : '#bbb'} style={{ marginLeft: 4 }} />
       </View>
-      {/* Right: Battery */}
       <View style={styles.batteryBox}>
         <MaterialCommunityIcons name="battery" size={18} color="#1976d2" style={{ marginRight: 2 }} />
         <Text style={styles.battery}>{batteryLevel !== null ? `${batteryLevel}%` : '--'}</Text>
