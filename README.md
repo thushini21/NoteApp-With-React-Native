@@ -24,6 +24,10 @@ A note-taking mobile application built with React Native and Firebase for my AMD
 ![WhatsApp Image 2025-09-22 at 10 36 32_d6088ccd](https://github.com/user-attachments/assets/81a0c6b0-401f-42cd-9965-6972ea7d35b3)
 
 
+## Demo video 
+
+ https://youtu.be/p03zpPmeLU8
+ 
 ## 🚀 Features Implemented
 
 ### ✅ Core Requirements
