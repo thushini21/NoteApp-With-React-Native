@@ -11,7 +11,19 @@
     "description": "A complete note-taking app with Firebase sync, categories, themes, and file attachments.",
     "privacy": "public",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thushini0223.quicknotes",
+      "buildNumber": "1",
+      "icon": "./assets/images/icon.png",
+      "splash": {
+        "image": "./assets/images/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses camera to take photos for notes",
+        "NSPhotoLibraryUsageDescription": "This app accesses photo library to attach images to notes"
+      }
     },
     "android": {
       "adaptiveIcon": {
