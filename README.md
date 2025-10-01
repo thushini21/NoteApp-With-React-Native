@@ -1,6 +1,28 @@
 # QuickNotes Mobile App
 
 A note-taking mobile application built with React Native and Firebase for my AMD coursework project.
+![WhatsApp Image 2025-09-22 at 10 36 35_2c7b0432](https://github.com/user-attachments/assets/08753ef4-b4b8-4af5-870d-e98bb7278ff8)
+
+![WhatsApp Image 2025-09-22 at 10 36 31_70a227fa](https://github.com/user-attachments/assets/cea92737-a126-4cf8-932f-2d15f28f86eb)
+
+![WhatsApp Image 2025-09-22 at 10 36 34_b2b8f0d3](https://github.com/user-attachments/assets/dee22895-9d73-41e1-b51f-9c31001c7ad3)
+
+![WhatsApp Image 2025-09-22 at 10 36 36_112c2bc7](https://github.com/user-attachments/assets/939bc3d2-8d02-4388-9a3c-25eee9278f5e)
+
+![WhatsApp Image 2025-09-22 at 10 36 35_c290a025](https://github.com/user-attachments/assets/895e1d99-586d-4d12-975f-4b3ec6161eaa)
+
+![WhatsApp Image 2025-09-22 at 10 36 30_07816146](https://github.com/user-attachments/assets/23333dd1-a7f9-4734-be5a-d5267572bed8)
+
+![WhatsApp Image 2025-09-22 at 10 36 30_0edb1954](https://github.com/user-attachments/assets/045c6e6b-c3fa-46f0-b426-90931ac76c85)
+
+![WhatsApp Image 2025-09-22 at 10 36 32_5a6bbd31](https://github.com/user-attachments/assets/c2b6d307-3fba-4308-b4fa-84eff96c0438)
+
+![WhatsApp Image 2025-09-22 at 10 36 33_45d49b11](https://github.com/user-attachments/assets/3c225fd2-9a4e-4d8b-a0f7-338f33f2fad8)
+
+![WhatsApp Image 2025-09-22 at 10 36 34_aa837b24](https://github.com/user-attachments/assets/8c81c290-8f3f-4171-a3b4-7b8d1a5a6abd)
+
+![WhatsApp Image 2025-09-22 at 10 36 32_d6088ccd](https://github.com/user-attachments/assets/81a0c6b0-401f-42cd-9965-6972ea7d35b3)
+
 
 ## 🚀 Features Implemented
 
@@ -78,5 +100,4 @@ A note-taking mobile application built with React Native and Firebase for my AMD
 - **Subject**: Advanced Mobile Development (AMD)
 - **Project Type**: Final Coursework Assignment
 
----
-*Built with React Native Expo and Firebase for educational purposes*
+
