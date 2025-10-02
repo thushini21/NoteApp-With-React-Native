@@ -1,9 +1,9 @@
-// Add Notes screen - main note creation interface
+// note add karanna
 import { MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from "expo-router";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NotesContext } from "../../context/NotesContext";
 import { useTheme } from "../../context/ThemeContext";

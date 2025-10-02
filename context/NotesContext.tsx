@@ -1,4 +1,4 @@
-// Notes context for managing all note operations
+// notes walata
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { db } from "../firebase";

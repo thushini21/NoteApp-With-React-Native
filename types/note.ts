@@ -1,4 +1,4 @@
-// types/note.ts
+// note types
 export interface Note {
   id?: string;
   title: string;

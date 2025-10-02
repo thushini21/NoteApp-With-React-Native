@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, Animated, Dimensions, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AuthContext, AuthContextType } from '../context/AuthContext';
 import { NotesContext } from '../context/NotesContext';
@@ -25,7 +25,7 @@ export default function Profile() {
   // Extract username from email (before @)
   const username = user?.email ? user.email.split('@')[0] : '';
 
-  // Side Menu Animation Functions
+  // Side menu functions
   const openSideMenu = () => {
     setSideMenuOpen(true);
     Animated.timing(slideAnim, {
@@ -182,7 +182,7 @@ export default function Profile() {
         >
           
           {/* Welcome Section */}
-          <View style={[styles.welcomeSection, { backgroundColor: '#ffd700' }]}>
+          <View style={[styles.welcomeSection, { backgroundColor: '#e3f2fd' }]}>
             <Text style={[styles.welcomeText, { color: themeColors.textPrimary, fontSize: fontSize + 2 }]}>
               Welcome back, {username}! 👋
             </Text>
