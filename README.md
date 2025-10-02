@@ -1,8 +1,7 @@
 # QuickNotes Mobile App
 
 A note-taking mobile application built with React Native and Firebase for my AMD coursework project.
-<img src="https://github.com/user-attachments/assets/08753ef4-b4b8-4af5-870d-e98bb7278ff8" alt="Image 1" width="200" />
-<img src="https://github.com/user-attachments/assets/cea92737-a126-4cf8-932f-2d15f28f86eb" alt="Image 2" width="200" />
+
 <img src="https://github.com/user-attachments/assets/dee22895-9d73-41e1-b51f-9c31001c7ad3" alt="Image 3" width="200" />
 <img src="https://github.com/user-attachments/assets/939bc3d2-8d02-4388-9a3c-25eee9278f5e" alt="Image 4" width="200" />
 <img src="https://github.com/user-attachments/assets/895e1d99-586d-4d12-975f-4b3ec6161eaa" alt="Image 5" width="200" />
