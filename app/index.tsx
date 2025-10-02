@@ -1,4 +1,4 @@
-// Main app entry point - handles initial routing
+// mulin app eka idan patan gannawa
 import { useRouter } from "expo-router";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from "react-native";
