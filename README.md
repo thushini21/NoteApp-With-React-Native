@@ -2,7 +2,7 @@
 
 A note-taking mobile application built with React Native and Firebase for my AMD coursework 
 
-<img src="https://github.com/user-attachments/assets/c4d0f90b-f2ee-4af7-bfdd-c127a5416922" alt="Image 1" width="200" />\
+  <img src="https://github.com/user-attachments/assets/c4d0f90b-f2ee-4af7-bfdd-c127a5416922" alt="Image 1" width="200" />
   <img src="https://github.com/user-attachments/assets/489926a3-5350-4633-9513-ce267aae2cfc" alt="Image 2" width="200" />
   <img src="https://github.com/user-attachments/assets/962f9c74-f12e-472a-9fb7-6c85e90c7bc2" alt="Image 3" width="200" />
   <img src="https://github.com/user-attachments/assets/59a59984-34cf-4597-919d-2b93fe3f933c" alt="Image 4" width="200" />
