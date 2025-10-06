@@ -1,21 +1,19 @@
-# QuickNotes Mobile App
+![10nwe](https://github.com/user-attachments/assets/2850c5e6-cc4a-47ca-9393-ed438486db56)# QuickNotes Mobile App
 
 A note-taking mobile application built with React Native and Firebase for my AMD coursework 
 
-  <img src="https://github.com/user-attachments/assets/c4d0f90b-f2ee-4af7-bfdd-c127a5416922" alt="Image 1" width="200" height="300" />
-  <img src="https://github.com/user-attachments/assets/489926a3-5350-4633-9513-ce267aae2cfc" alt="Image 2" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/962f9c74-f12e-472a-9fb7-6c85e90c7bc2" alt="Image 3" width="200" height="300" />
-  <img src="https://github.com/user-attachments/assets/59a59984-34cf-4597-919d-2b93fe3f933c" alt="Image 4" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/31e3ac65-5fce-45b2-9083-30ad7ec4e184" alt="Image 5" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/dee22895-9d73-41e1-b51f-9c31001c7ad3" alt="Image 6" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/939bc3d2-8d02-4388-9a3c-25eee9278f5e" alt="Image 7" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/895e1d99-586d-4d12-975f-4b3ec6161eaa" alt="Image 8" width="200" height="300" />
-  <img src="https://github.com/user-attachments/assets/23333dd1-a7f9-4734-be5a-d5267572bed8" alt="Image 9" width="200" height="300" />
-  <img src="https://github.com/user-attachments/assets/045c6e6b-c3fa-46f0-b426-90931ac76c85" alt="Image 10" width="200" height="300" />
-  <img src="https://github.com/user-attachments/assets/c2b6d307-3fba-4308-b4fa-84eff96c0438" alt="Image 11" width="200" height="300"/>
-  <img src="https://github.com/user-attachments/assets/3c225fd2-9a4e-4d8b-a0f7-338f33f2fad8" alt="Image 12" width="200"  height="300"/>
-  <img src="https://github.com/user-attachments/assets/8c81c290-8f3f-4171-a3b4-7b8d1a5a6abd" alt="Image 13" width="200"  height="300"/>
-  <img src="https://github.com/user-attachments/assets/81a0c6b0-401f-42cd-9965-6972ea7d35b3" alt="Image 14" width="200" height="300"/>
+ 
+<img src="https://github.com/user-attachments/assets/80d43691-537a-40fd-a5c3-5f50d06a441c" alt="1" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/77d5ce0d-eb8e-4845-8af7-dda827890f77" alt="2" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/76bda7de-ebc2-4174-b41a-b74cea60b1bb" alt="3" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/f887cfd4-fc7d-458c-a43f-019c52a31471" alt="4" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/22bac851-952e-4bb9-8ea3-d169ecac623b" alt="5" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/88c82e99-6628-40c1-ad1d-68b3f2364aa6" alt="6" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/0480d408-280f-4780-9b14-cb237f7c569f" alt="7" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/27dc515e-ce13-4849-8779-03438358807c" alt="8" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/eb47937c-c2d6-4b23-bf14-0d45a64518a8" alt="9" width="300" height="200">
+<img src="https://github.com/user-attachments/assets/8315eca3-f327-4fb0-866b-9ee4f9d28598" alt="10" width="300" height="200">
+
 
 
 ## Demo video 
