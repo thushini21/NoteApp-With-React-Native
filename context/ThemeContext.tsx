@@ -10,6 +10,13 @@ interface ThemeColors {
   textMuted: string;
   border: string;
   overlay: string;
+  gradientPrimary: [string, string];
+  gradientSecondary: [string, string];
+  cardGradient: [string, string];
+  accent: string;
+  success: string;
+  warning: string;
+  error: string;
 }
 
 interface ThemeContextType {
@@ -31,6 +38,13 @@ const lightTheme: ThemeColors = {
   textMuted: '#666',
   border: '#f0f0f0',
   overlay: 'rgba(0, 0, 0, 0.1)',
+  gradientPrimary: ['#1976d2', '#e3f2fd'],
+  gradientSecondary: ['#0d47a1', '#e3f2fd'],
+  cardGradient: ['#e3f2fd', '#ffffff'],
+  accent: '#1976d2',
+  success: '#28a745',
+  warning: '#ffc107',
+  error: '#dc3545',
 };
 
 const darkTheme: ThemeColors = {
@@ -41,6 +55,13 @@ const darkTheme: ThemeColors = {
   textMuted: '#b0b0b0',
   border: '#404040',
   overlay: 'rgba(255, 255, 255, 0.1)',
+  gradientPrimary: ['#434343', '#000000'],
+  gradientSecondary: ['#8360c3', '#2ebf91'],
+  cardGradient: ['#2a2a2a', '#3a3a3a'],
+  accent: '#8360c3',
+  success: '#20c997',
+  warning: '#fd7e14',
+  error: '#e74c3c',
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

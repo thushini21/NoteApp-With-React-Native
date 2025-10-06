@@ -1,9 +1,87 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect } from "react";
-import { Alert, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useContext, useEffect } from "react";
+import { Alert, Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../../context/NotesContext";
 import { useTheme } from "../../context/ThemeContext";
+
+// NoteCard component to avoid hooks in renderItem
+const ArchivedNoteCard = ({ item, theme, themeColors, onRestore, onPress }: any) => {
+  const scaleAnim = new Animated.Value(1);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }]}>
+      <LinearGradient
+        colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+        style={styles.noteCard}
+      >
+        <TouchableOpacity
+          onPress={onPress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={styles.noteContent}
+        >
+          <View style={styles.noteHeader}>
+            <View style={styles.noteTitleSection}>
+              <Text style={[styles.noteTitle, { color: themeColors.textPrimary }]}>
+                📂 {item.title}
+              </Text>
+              {item.category && (
+                <LinearGradient
+                  colors={['#1976d2', '#0d47a1']}
+                  style={styles.categoryBadge}
+                >
+                  <Text style={styles.categoryText}>{item.category}</Text>
+                </LinearGradient>
+              )}
+            </View>
+            <TouchableOpacity
+              style={styles.restoreButton}
+              onPress={() => onRestore(item.id)}
+            >
+              <LinearGradient
+                colors={['#4caf50', '#388e3c']}
+                style={styles.actionButton}
+              >
+                <MaterialIcons name="restore" size={20} color="#ffffff" />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+          
+          {item.text && (
+            <Text style={[styles.noteText, { color: themeColors.textSecondary }]} numberOfLines={3}>
+              {item.text}
+            </Text>
+          )}
+          
+          {item.file && (
+            <View style={styles.fileContainer}>
+              <MaterialIcons name="picture-as-pdf" size={16} color="#ff9800" />
+              <Text style={[styles.fileName, { color: themeColors.textSecondary }]}>
+                {item.file.name || 'PDF File'}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </LinearGradient>
+    </Animated.View>
+  );
+};
 
 export default function ArchivedNotes() {
   const { archivedNotes, unarchiveNote, fetchArchivedNotes } = useContext(NotesContext);
@@ -26,64 +104,62 @@ export default function ArchivedNotes() {
   };
 
   return (
-    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
-      {/* Header with back button */}
-      <View style={styles.header}>
+    <LinearGradient
+      colors={theme === 'dark' ? ['#2a2a2a', '#1a1a1a'] : ['#e3f2fd', '#ffffff']}
+      style={styles.root}
+    >
+      {/* Header */}
+      <LinearGradient
+        colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#1976d2', '#0d47a1']}
+        style={styles.header}
+      >
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => router.push('/profile')}
         >
-          <MaterialIcons name="arrow-back" size={28} color={themeColors.textPrimary} />
+          <MaterialIcons name="arrow-back" size={28} color="#ffffff" />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: themeColors.textPrimary }]}>Archived Notes</Text>
-      </View>
-      
-      <FlatList
-        data={archivedNotes}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={[styles.noteBox, { 
-            backgroundColor: theme === 'dark' ? '#333' : (item.color || '#f0e68c'),
-            borderColor: themeColors.border 
-          }]}>
-            <View style={styles.noteHeader}>
-              <View style={styles.noteTitleSection}>
-                <Text style={[styles.noteTitle, { color: themeColors.textPrimary }]}>{item.title}</Text>
-                {item.category && (
-                  <Text style={[styles.noteCategory, { color: themeColors.textSecondary }]}>📁 {item.category}</Text>
-                )}
-              </View>
-              {/* Restore Button */}
-              <TouchableOpacity 
-                style={styles.restoreButton} 
-                onPress={() => handleRestoreNote(item.id)}
-              >
-                <MaterialIcons name="restore" size={24} color="#4caf50" />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
-              {item.file ? (
-                <Text style={[styles.fileLink, { color: themeColors.textSecondary }]}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
-              ) : null}
-              {item.text ? (
-                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>{item.text}</Text>
-              ) : item.file ? (
-                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>[File note]</Text>
-              ) : null}
-            </TouchableOpacity>
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <MaterialIcons name="archive" size={64} color={themeColors.textMuted} />
-            <Text style={[styles.emptyText, { color: themeColors.textMuted }]}>No archived notes</Text>
+        <Text style={styles.headerTitle}>📂 Archived Notes</Text>
+        <View style={styles.placeholder} />
+      </LinearGradient>
+
+      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        {archivedNotes.length === 0 ? (
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.emptyContainer}
+          >
+            <MaterialIcons name="archive" size={80} color={themeColors.textMuted} />
+            <Text style={[styles.emptyText, { color: themeColors.textPrimary }]}>No Archived Notes</Text>
             <Text style={[styles.emptySubText, { color: themeColors.textMuted }]}>
               Notes you archive will appear here
             </Text>
+          </LinearGradient>
+        ) : (
+          <View style={styles.notesContainer}>
+            {archivedNotes.map((item: any) => (
+              <ArchivedNoteCard
+                key={item.id}
+                item={item}
+                theme={theme}
+                themeColors={themeColors}
+                onRestore={handleRestoreNote}
+                onPress={() => router.push({ 
+                  pathname: '/dashboard/noteDetails', 
+                  params: { 
+                    noteTitle: item.title, 
+                    noteText: item.text, 
+                    noteColor: item.color, 
+                    noteFileUri: item.file?.uri || '', 
+                    noteFileName: item.file?.name || '' 
+                  } 
+                })}
+              />
+            ))}
           </View>
-        }
-      />
-    </View>
+        )}
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
@@ -91,35 +167,47 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
-    width: '100%',
-    paddingHorizontal: width > 600 ? 48 : 16,
-    paddingVertical: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 10,
   },
   backButton: {
     padding: 8,
     marginRight: 12,
   },
-  title: {
-    fontSize: width > 600 ? 28 : 22,
+  headerTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#1976d2',
+    color: '#ffffff',
     flex: 1,
+    textAlign: 'center',
   },
-  noteBox: {
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 8,
+  placeholder: {
+    width: 44,
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  notesContainer: {
+    paddingBottom: 30,
+  },
+  noteCard: {
+    marginBottom: 16,
+    borderRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    width: '100%',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden',
+  },
+  noteContent: {
+    padding: 16,
   },
   noteHeader: {
     flexDirection: 'row',
@@ -129,50 +217,71 @@ const styles = StyleSheet.create({
   },
   noteTitleSection: {
     flex: 1,
-    marginRight: 8,
+    marginRight: 12,
   },
   noteTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
-    width: '100%',
-  },
-  noteCategory: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-    fontStyle: 'italic',
-  },
-  noteText: {
-    fontSize: 15,
-    color: '#333',
-    flexWrap: 'wrap',
-    marginRight: 8,
-  },
-  fileLink: {
-    color: '#007bff',
-    textDecorationLine: 'underline',
-    marginTop: 8,
-  },
-  restoreButton: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 100,
-  },
-  emptyText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 16,
+    marginBottom: 6,
+  },
+  categoryBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  categoryText: {
+    fontSize: 12,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  restoreButton: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noteText: {
+    fontSize: 14,
+    lineHeight: 20,
     marginBottom: 8,
+  },
+  fileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,152,0,0.1)',
+    padding: 8,
+    borderRadius: 8,
+  },
+  fileName: {
+    fontSize: 12,
+    marginLeft: 6,
+    flex: 1,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+    marginTop: 50,
+    borderRadius: 20,
+    marginHorizontal: 20,
+  },
+  emptyText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    textAlign: 'center',
   },
   emptySubText: {
     fontSize: 14,
     textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
   },
 });

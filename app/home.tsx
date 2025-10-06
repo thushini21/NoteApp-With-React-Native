@@ -1,9 +1,143 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 import React, { useContext } from "react";
-import { Alert, Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../context/NotesContext";
 import { useTheme } from "../context/ThemeContext";
+
+// Separate component for note card to avoid hook issues
+const NoteCard = ({ item, router, handleEditNote, handleArchiveNote, handleDeleteNote, theme, themeColors }: any) => {
+  const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      friction: 6,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 6,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={() => router.push({ 
+        pathname: '/dashboard/noteDetails', 
+        params: { 
+          noteTitle: item.title, 
+          noteText: item.text, 
+          noteColor: item.color, 
+          noteFileUri: item.file && item.file.uri ? item.file.uri : '', 
+          noteFileName: item.file && item.file.name ? item.file.name : '' 
+        } 
+      })}
+    >
+      <Animated.View style={[
+        styles.animatedCard,
+        { transform: [{ scale: scaleAnim }] }
+      ]}>
+        <LinearGradient
+          colors={theme === 'dark' ? (themeColors.cardGradient as [string, string]) : ['#e3f2fd', '#ffffff']}
+          style={[styles.noteBox, { 
+            borderColor: themeColors.border,
+            shadowColor: theme === 'dark' ? '#000' : '#000',
+            elevation: 8,
+          }]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.noteHeader}>
+            <View style={styles.noteTitleSection}>
+              <TouchableOpacity 
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                onPress={() => router.push({ 
+                  pathname: '/dashboard/noteDetails', 
+                  params: { 
+                    noteTitle: item.title, 
+                    noteText: item.text, 
+                    noteColor: item.color, 
+                    noteFileUri: item.file && item.file.uri ? item.file.uri : '', 
+                    noteFileName: item.file && item.file.name ? item.file.name : '' 
+                  } 
+                })}
+              >
+                <Text style={[styles.noteTitle, { color: themeColors.textPrimary, fontSize: 18, fontWeight: 'bold' }]}>
+                  {item.title}
+                </Text>
+                {item.category && (
+                  <LinearGradient
+                    colors={theme === 'dark' ? ['#8360c3', '#2ebf91'] : ['#1976d2', '#e3f2fd']}
+                    style={styles.categoryBadge}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                  >
+                    <Text style={styles.categoryBadgeText}>📁 {item.category}</Text>
+                  </LinearGradient>
+                )}
+              </TouchableOpacity>
+            </View>
+            {/* Action Buttons */}
+            <View style={styles.noteActions}>
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: 'rgba(102, 126, 234, 0.1)' }]} 
+                onPress={() => handleEditNote(item)}
+              >
+                <MaterialIcons name="edit" size={20} color={themeColors.accent} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: 'rgba(255, 152, 0, 0.1)' }]} 
+                onPress={() => handleArchiveNote(item.id)}
+              >
+                <MaterialIcons name="archive" size={20} color="#ff9800" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: 'rgba(211, 47, 47, 0.1)' }]} 
+                onPress={() => handleDeleteNote(item.id)}
+              >
+                <MaterialIcons name="delete" size={20} color="#d32f2f" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
+            {item.file ? (
+              <LinearGradient
+                colors={['rgba(74, 144, 226, 0.1)', 'rgba(74, 144, 226, 0.05)']}
+                style={styles.fileContainer}
+              >
+                <MaterialIcons name="picture-as-pdf" size={16} color="#4a90e2" />
+                <Text style={[styles.fileLink, { color: '#4a90e2', marginLeft: 8 }]}>
+                  {item.file && item.file.name ? item.file.name : 'Open file'}
+                </Text>
+              </LinearGradient>
+            ) : null}
+            {item.text ? (
+              <Text style={[styles.noteText, { color: themeColors.textSecondary, lineHeight: 22 }]}>
+                {item.text}
+              </Text>
+            ) : item.file ? (
+              <Text style={[styles.noteText, { color: themeColors.textSecondary, fontStyle: 'italic' }]}>
+                [File note]
+              </Text>
+            ) : null}
+          </TouchableOpacity>
+        </LinearGradient>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
 
 export default function Home() {
   const { notes, deleteNote, archiveNote } = useContext(NotesContext);
@@ -125,60 +259,30 @@ export default function Home() {
         data={filteredNotes}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={[styles.noteBox, { 
-            backgroundColor: theme === 'dark' ? '#333' : (item.color || '#fff'),
-            borderColor: themeColors.border 
-          }]}>
-            <View style={styles.noteHeader}>
-              <View style={styles.noteTitleSection}>
-                <Text style={[styles.noteTitle, { color: themeColors.textPrimary }]}>{item.title}</Text>
-                {item.category && (
-                  <Text style={[styles.noteCategory, { color: themeColors.textSecondary }]}>📁 {item.category}</Text>
-                )}
-              </View>
-              {/* Action Buttons */}
-              <View style={styles.noteActions}>
-                <TouchableOpacity 
-                  style={styles.actionButton} 
-                  onPress={() => handleEditNote(item)}
-                >
-                  <MaterialIcons name="edit" size={20} color="#1976d2" />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.actionButton} 
-                  onPress={() => handleArchiveNote(item.id)}
-                >
-                  <MaterialIcons name="archive" size={20} color="#ff9800" />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.actionButton} 
-                  onPress={() => handleDeleteNote(item.id)}
-                >
-                  <MaterialIcons name="delete" size={20} color="#d32f2f" />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <TouchableOpacity onPress={() => router.push({ pathname: '/dashboard/noteDetails', params: { noteTitle: item.title, noteText: item.text, noteColor: item.color, noteFileUri: item.file && item.file.uri ? item.file.uri : '', noteFileName: item.file && item.file.name ? item.file.name : '' } })}>
-              {item.file ? (
-                <Text style={[styles.fileLink, { color: themeColors.textSecondary }]}>PDF: {item.file && item.file.name ? item.file.name : 'Open file'}</Text>
-              ) : null}
-              {item.text ? (
-                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>{item.text}</Text>
-              ) : item.file ? (
-                <Text style={[styles.noteText, { color: themeColors.textSecondary }]}>[File note]</Text>
-              ) : null}
-            </TouchableOpacity>
-          </View>
+          <NoteCard 
+            item={item}
+            router={router}
+            handleEditNote={handleEditNote}
+            handleArchiveNote={handleArchiveNote}
+            handleDeleteNote={handleDeleteNote}
+            theme={theme}
+            themeColors={themeColors}
+          />
         )}
         ListEmptyComponent={<Text style={[styles.empty, { color: themeColors.textMuted }]}>No notes found.</Text>}
-      />
-      
-      {/* Floating Add Button */}
+      />      {/* Floating Add Button */}
       <TouchableOpacity 
-        style={styles.floatingAddButton} 
+        style={styles.floatingAddButtonContainer} 
         onPress={handleAddNote}
       >
-        <MaterialIcons name="add" size={28} color="#fff" />
+        <LinearGradient
+          colors={theme === 'dark' ? ['#8360c3', '#2ebf91'] : ['#1976d2', '#0d47a1']}
+          style={styles.floatingAddButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <MaterialIcons name="add" size={28} color="#fff" />
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}
@@ -232,6 +336,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     width: '100%',
+  },
+  animatedCard: {
+    marginVertical: 4,
   },
   noteTitle: {
     fontWeight: 'bold',
@@ -323,14 +430,15 @@ const styles = StyleSheet.create({
     color: '#007bff',
     marginTop: 4,
   },
-  floatingAddButton: {
+  floatingAddButtonContainer: {
     position: 'absolute',
     right: 20,
     bottom: 100,
+  },
+  floatingAddButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#007bff',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 8,
@@ -358,10 +466,28 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   actionButton: {
-    padding: 6,
-    borderRadius: 6,
+    padding: 8,
+    borderRadius: 8,
     backgroundColor: 'rgba(0,0,0,0.05)',
+    marginLeft: 4,
+  },
+  categoryBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 4,
+    alignSelf: 'flex-start',
+  },
+  categoryBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  fileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 8,
+    marginVertical: 4,
   },
 });
-
-// ...existing code...

@@ -1,6 +1,8 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useState } from "react";
-import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useContext, useState } from "react";
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NotesContext } from "../../context/NotesContext";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -41,55 +43,109 @@ export default function EditNotes() {
   };
 
   return (
-    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
-      <Text style={[styles.title, { color: themeColors.textPrimary }]}>Edit Note</Text>
-      <TextInput
-        style={[styles.input, { 
-          backgroundColor: themeColors.cardBackground, 
-          borderColor: themeColors.border, 
-          color: themeColors.textPrimary 
-        }]}
-        placeholder="Title"
-        placeholderTextColor={themeColors.textMuted}
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={[styles.input, { 
-          backgroundColor: themeColors.cardBackground, 
-          borderColor: themeColors.border, 
-          color: themeColors.textPrimary 
-        }]}
-        placeholder="Enter your note"
-        placeholderTextColor={themeColors.textMuted}
-        value={note}
-        onChangeText={setNote}
-      />
-      
-      {/* Category Selection */}
-      <Text style={styles.categoryTitle}>Category:</Text>
-      <View style={styles.categoryContainer}>
-        {categories.map((cat) => (
-          <TouchableOpacity
-            key={cat}
-            style={[
-              styles.categoryButton,
-              category === cat && styles.selectedCategoryButton
-            ]}
-            onPress={() => setCategory(cat)}
+    <LinearGradient
+      colors={theme === 'dark' ? ['#2a2a2a', '#1a1a1a'] : ['#e3f2fd', '#ffffff']}
+      style={styles.root}
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <LinearGradient
+          colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#1976d2', '#0d47a1']}
+          style={styles.header}
+        >
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => router.back()}
           >
-            <Text style={[
-              styles.categoryButtonText,
-              category === cat && styles.selectedCategoryButtonText
-            ]}>
-              {cat}
-            </Text>
+            <MaterialIcons name="arrow-back" size={28} color="#ffffff" />
           </TouchableOpacity>
-        ))}
-      </View>
-      
-      <Button title="Save" onPress={handleSave} />
-    </View>
+          <Text style={styles.headerTitle}>Edit Note</Text>
+          <View style={styles.placeholder} />
+        </LinearGradient>
+
+        {/* Content Container */}
+        <View style={styles.contentContainer}>
+          {/* Title Input */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>📝 Edit Title</Text>
+            <TextInput
+              style={[styles.titleInput, { color: themeColors.textPrimary }]}
+              placeholder="Enter note title..."
+              placeholderTextColor={themeColors.textMuted}
+              value={title}
+              onChangeText={setTitle}
+            />
+          </LinearGradient>
+
+          {/* Note Content */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>✍️ Edit Content</Text>
+            <TextInput
+              style={[styles.noteInput, { color: themeColors.textPrimary }]}
+              placeholder="Write your note here..."
+              placeholderTextColor={themeColors.textMuted}
+              value={note}
+              onChangeText={setNote}
+              multiline
+              numberOfLines={8}
+              textAlignVertical="top"
+            />
+          </LinearGradient>
+
+          {/* Category Selection */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>📁 Category</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setCategory(cat)}
+                  style={[
+                    styles.categoryChip,
+                    category === cat && styles.selectedCategory
+                  ]}
+                >
+                  <LinearGradient
+                    colors={category === cat 
+                      ? ['#1976d2', '#0d47a1'] 
+                      : [themeColors.cardBackground, themeColors.cardBackground]
+                    }
+                    style={styles.categoryGradient}
+                  >
+                    <Text style={[
+                      styles.categoryText,
+                      { color: category === cat ? '#ffffff' : themeColors.textSecondary }
+                    ]}>
+                      {cat}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </LinearGradient>
+
+          {/* Save Button */}
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <LinearGradient
+              colors={['#1976d2', '#0d47a1']}
+              style={styles.saveButtonGradient}
+            >
+              <MaterialIcons name="save" size={24} color="#ffffff" />
+              <Text style={styles.saveButtonText}>Save Changes</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
@@ -99,67 +155,109 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9f9f9',
     width: '100%',
-    paddingHorizontal: width > 600 ? 48 : 16,
-    paddingVertical: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  title: {
-    fontSize: width > 600 ? 28 : 22,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 10,
+    borderRadius: 0,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#1976d2',
+    color: '#ffffff',
+    flex: 1,
     textAlign: 'center',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#90caf9',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-    backgroundColor: '#fff',
-    fontSize: 16,
-    color: '#222',
-    width: '100%',
-    maxWidth: 400,
+  placeholder: {
+    width: 44,
   },
-  categoryTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#1976d2',
-    alignSelf: 'flex-start',
-    width: '100%',
-    maxWidth: 400,
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
-  categoryContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+  inputContainer: {
     marginBottom: 20,
-    width: '100%',
-    maxWidth: 400,
+    borderRadius: 15,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  categoryButton: {
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  titleInput: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(25,118,210,0.2)',
+  },
+  noteInput: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(25,118,210,0.2)',
+    minHeight: 120,
+    textAlignVertical: 'top',
+  },
+  categoryScroll: {
+    marginTop: 8,
+  },
+  categoryChip: {
+    marginRight: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  selectedCategory: {
+    // Used for conditional styling
+  },
+  categoryGradient: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    margin: 4,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#90caf9',
-    backgroundColor: '#f8f9fa',
   },
-  selectedCategoryButton: {
-    backgroundColor: '#007bff',
-    borderColor: '#007bff',
-  },
-  categoryButtonText: {
-    fontSize: 12,
-    color: '#666',
+  categoryText: {
+    fontSize: 14,
     fontWeight: '500',
   },
-  selectedCategoryButtonText: {
-    color: '#fff',
+  saveButton: {
+    marginTop: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  saveButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  saveButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
     fontWeight: 'bold',
+    marginLeft: 8,
   },
 });

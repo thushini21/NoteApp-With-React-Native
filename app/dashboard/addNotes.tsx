@@ -2,9 +2,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-import { Alert, Button, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NotesContext } from "../../context/NotesContext";
 import { useTheme } from "../../context/ThemeContext";
 // const styles = StyleSheet.create({
@@ -76,99 +77,185 @@ export default function AddNotes() {
   };
 
   return (
-    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => router.push('/home')}
+    <LinearGradient
+      colors={theme === 'dark' ? ['#2a2a2a', '#1a1a1a'] : ['#e3f2fd', '#ffffff']}
+      style={styles.root}
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <LinearGradient
+          colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#1976d2', '#0d47a1']}
+          style={styles.header}
         >
-          <MaterialIcons name="arrow-back" size={28} color={themeColors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: themeColors.textPrimary }]}>Add Note</Text>
-      </View>
-      
-      <TextInput
-        style={[styles.input, { 
-          backgroundColor: themeColors.cardBackground, 
-          borderColor: themeColors.border, 
-          color: themeColors.textPrimary 
-        }]}
-        placeholder="Title"
-        placeholderTextColor={themeColors.textMuted}
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={[styles.input, { 
-          backgroundColor: themeColors.cardBackground, 
-          borderColor: themeColors.border, 
-          color: themeColors.textPrimary 
-        }]}
-        placeholder="Enter your note"
-        placeholderTextColor={themeColors.textMuted}
-        value={note}
-        onChangeText={setNote}
-      />
-      
-      {/* Category Selection */}
-      <View style={styles.categoryContainer}>
-        <Text style={[styles.categoryLabel, { color: themeColors.textSecondary }]}>Category:</Text>
-        <View style={styles.categoryButtons}>
-          {categories.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[
-                styles.categoryButton,
-                { backgroundColor: themeColors.cardBackground, borderColor: themeColors.border },
-                category === cat && styles.selectedCategoryButton
-              ]}
-              onPress={() => setCategory(cat)}
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => router.push('/home')}
+          >
+            <MaterialIcons name="arrow-back" size={28} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Create New Note</Text>
+          <View style={styles.placeholder} />
+        </LinearGradient>
+
+        {/* Content Container */}
+        <View style={styles.contentContainer}>
+          {/* Title Input */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>📝 Title</Text>
+            <TextInput
+              style={[styles.titleInput, { color: themeColors.textPrimary }]}
+              placeholder="Enter note title..."
+              placeholderTextColor={themeColors.textMuted}
+              value={title}
+              onChangeText={setTitle}
+            />
+          </LinearGradient>
+
+          {/* Note Content */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>✍️ Content</Text>
+            <TextInput
+              style={[styles.noteInput, { color: themeColors.textPrimary }]}
+              placeholder="Write your note here..."
+              placeholderTextColor={themeColors.textMuted}
+              value={note}
+              onChangeText={setNote}
+              multiline
+              numberOfLines={8}
+              textAlignVertical="top"
+            />
+          </LinearGradient>
+
+          {/* Category Selection */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>📁 Category</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setCategory(cat)}
+                  style={[
+                    styles.categoryChip,
+                    category === cat && styles.selectedCategory
+                  ]}
+                >
+                  <LinearGradient
+                    colors={category === cat 
+                      ? ['#1976d2', '#0d47a1'] 
+                      : [themeColors.cardBackground, themeColors.cardBackground]
+                    }
+                    style={styles.categoryGradient}
+                  >
+                    <Text style={[
+                      styles.categoryText,
+                      { color: category === cat ? '#ffffff' : themeColors.textSecondary }
+                    ]}>
+                      {cat}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </LinearGradient>
+
+          {/* Attachments */}
+          <LinearGradient
+            colors={theme === 'dark' ? ['#3a3a3a', '#2a2a2a'] : ['#ffffff', '#f8f9fa']}
+            style={styles.inputContainer}
+          >
+            <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>📎 Attachments</Text>
+            
+            <View style={styles.attachmentButtons}>
+              <TouchableOpacity
+                style={styles.attachmentButton}
+                onPress={async () => {
+                  const result = await DocumentPicker.getDocumentAsync({ type: ['application/pdf'], multiple: false });
+                  if (!result.canceled && result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    if (asset.mimeType === 'application/pdf') {
+                      setFile({ uri: asset.uri, name: asset.name ?? 'file' });
+                    } else {
+                      Alert.alert('Unsupported file', 'Only PDF files are allowed.');
+                    }
+                  }
+                }}
+              >
+                <LinearGradient
+                  colors={['#ff9800', '#f57c00']}
+                  style={styles.buttonGradient}
+                >
+                  <MaterialIcons name="picture-as-pdf" size={24} color="#ffffff" />
+                  <Text style={styles.buttonText}>PDF File</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.attachmentButton}
+                onPress={async () => {
+                  const result = await ImagePicker.launchImageLibraryAsync({ 
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+                    quality: 0.7 
+                  });
+                  if (!result.canceled && result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    setImage({ uri: asset.uri, name: asset.fileName ?? 'image' });
+                  }
+                }}
+              >
+                <LinearGradient
+                  colors={['#4caf50', '#388e3c']}
+                  style={styles.buttonGradient}
+                >
+                  <MaterialIcons name="image" size={24} color="#ffffff" />
+                  <Text style={styles.buttonText}>Image</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            {/* File Preview */}
+            {file && (
+              <View style={styles.filePreview}>
+                <MaterialIcons name="picture-as-pdf" size={20} color="#ff9800" />
+                <Text style={[styles.fileName, { color: themeColors.textSecondary }]}>{file.name}</Text>
+                <TouchableOpacity onPress={() => setFile(null)}>
+                  <MaterialIcons name="close" size={20} color="#d32f2f" />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {image && (
+              <View style={styles.filePreview}>
+                <MaterialIcons name="image" size={20} color="#4caf50" />
+                <Text style={[styles.fileName, { color: themeColors.textSecondary }]}>{image.name}</Text>
+                <TouchableOpacity onPress={() => setImage(null)}>
+                  <MaterialIcons name="close" size={20} color="#d32f2f" />
+                </TouchableOpacity>
+              </View>
+            )}
+          </LinearGradient>
+
+          {/* Add Note Button */}
+          <TouchableOpacity style={styles.addButton} onPress={handleAddNote}>
+            <LinearGradient
+              colors={['#1976d2', '#0d47a1']}
+              style={styles.addButtonGradient}
             >
-              <Text style={[
-                styles.categoryButtonText,
-                { color: themeColors.textSecondary },
-                category === cat && styles.selectedCategoryButtonText
-              ]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
+              <MaterialIcons name="add" size={24} color="#ffffff" />
+              <Text style={styles.addButtonText}>Create Note</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
-      </View>
-      
-      <View style={styles.fileRow}>
-        <Button title="Pick File" onPress={async () => {
-          const result = await DocumentPicker.getDocumentAsync({ type: ['application/pdf'], multiple: false });
-          if (!result.canceled && result.assets && result.assets.length > 0) {
-            const asset = result.assets[0];
-            if (asset.mimeType === 'application/pdf') {
-              setFile({ uri: asset.uri, name: asset.name ?? 'file' });
-            } else {
-              Alert.alert('Unsupported file', 'Only PDF files are allowed.');
-            }
-          }
-        }} />
-        <View style={{ width: 12 }} />
-        <Button title="Pick Image" onPress={async () => {
-          const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-          if (!result.canceled && result.assets && result.assets.length > 0) {
-            const asset = result.assets[0];
-            setImage({ uri: asset.uri, name: asset.fileName ?? 'image' });
-          }
-        }} />
-      </View>
-      {file && (
-        <View style={styles.fileInfo}>
-          <Text>File Selected: {file.name}</Text>
-        </View>
-      )}
-      {image && (
-        <View style={styles.fileInfo}>
-          <Text>Image Selected: {image.name}</Text>
-        </View>
-      )}
-      <Button title="Add Note" onPress={handleAddNote} />
-    </View>
+      </ScrollView>
+    </LinearGradient>
   );
 
 
@@ -181,18 +268,151 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9f9f9',
     width: '100%',
-    paddingHorizontal: width > 600 ? 48 : 16,
-    paddingVertical: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 10,
+    borderRadius: 0,
   },
   backButton: {
     padding: 8,
     marginRight: 12,
   },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    flex: 1,
+    textAlign: 'center',
+  },
+  placeholder: {
+    width: 44,
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  inputContainer: {
+    marginBottom: 20,
+    borderRadius: 15,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  titleInput: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(25,118,210,0.2)',
+  },
+  noteInput: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(25,118,210,0.2)',
+    minHeight: 120,
+    textAlignVertical: 'top',
+  },
+  categoryScroll: {
+    marginTop: 8,
+  },
+  categoryChip: {
+    marginRight: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  selectedCategory: {
+    // Used for conditional styling
+  },
+  categoryGradient: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  attachmentButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  attachmentButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  buttonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  filePreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(25,118,210,0.2)',
+  },
+  fileName: {
+    flex: 1,
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  addButton: {
+    marginTop: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  addButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  addButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  // Legacy styles (keeping for compatibility)
   title: {
     fontSize: width > 600 ? 28 : 22,
     fontWeight: 'bold',
